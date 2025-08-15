@@ -790,17 +790,24 @@
             
             // Click event
             state.addEventListener('click', function() {
-                // Remove previous selection
+                // Check if this state is already selected
+                const isAlreadySelected = this.classList.contains('selected');
+                
+                // Remove previous selection from all states
                 document.querySelectorAll('.state-path').forEach(s => {
                     s.classList.remove('selected');
                 });
                 
-                // Add selection to clicked state
-                this.classList.add('selected');
-                selectedState = stateCode;
-                
-                // Update info card
-                updateInfoCard(stateCode);
+                if (isAlreadySelected) {
+                    // If clicking the same state, deselect it
+                    selectedState = null;
+                    updateInfoCard(null);  // Reset info card to default
+                } else {
+                    // If clicking a different state, select it
+                    this.classList.add('selected');
+                    selectedState = stateCode;
+                    updateInfoCard(stateCode);
+                }
                 
                 // Hide tooltip
                 hideTooltip();

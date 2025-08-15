@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Minimal SVG Test</title>
+    <style>
+        body { margin: 20px; }
+        svg { border: 1px solid red; background: #f0f0f0; }
+        .state-path { fill: #4da6ff; stroke: #333; stroke-width: 0.5; }
+        .state-path:hover { fill: #ff6666; }
+    </style>
+</head>
+<body>
+    <h1>Testing if SVG Paths Render</h1>
+    <p>If you see a blue shape below with red border around the SVG area, the paths are valid:</p>
+    
+    <svg viewBox="0 0 959 593" width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+        <g class="state">
+            <!-- Testing with Alabama -->
+            <path id="state-AL" class="state-path" d="m 643,467.4 .4,-7.3 -.9,-1.2 -1.7,-.7 -2.5,-2.8 .5,-2.9 48.8,-5.1 -.7,-2.2 -1.5,-1.5 -.5,-1.4 .6,-6.3 -2.4,-5.7 .5,-2.6 .3,-3.7 2.2,-3.8 -.2,-1.1 -1.7,-1 v -3.2 l -1.8,-1.9 -2.9,-6.1 -12.9,-45.8 -45.7,4 1.3,2 -1.3,67 4.4,33.2 .9,-.5 1.3,.1 .6,.4 .8,-.1 2,-3.8 v -2.3 l 1.1,-1.1 1.4,.5 3.4,6.4 v .9 l -3.3,2.2 3.5,-.4 4.9,-1.6 z">
+                <title>Alabama</title>
+            </path>
+            
+            <!-- Testing with California (simpler path) -->
+            <path id="state-CA" class="state-path" d="m 69.4,365.6 3.4,5.2 -1.4,.1 -1.8,-1.9 z m 1.9,-9.8 1.8,4.1 2.6,1 .7,-.6 -1.3,-2.5 -2.6,-2.4 z">
+                <title>California Part</title>
+            </path>
+        </g>
+    </svg>
+    
+    <p>Debug info:</p>
+    <ul>
+        <li>SVG dimensions: 800x500 (explicitly set)</li>
+        <li>ViewBox: 0 0 959 593</li>
+        <li>Red border shows SVG boundaries</li>
+        <li>Gray background shows SVG area</li>
+        <li>Blue shapes are the state paths</li>
+        <li>Hover over shapes to see them turn red</li>
+    </ul>
+    
+    <p>If you see NO blue shapes but DO see the gray rectangle with red border, the path data may be invalid or outside the viewBox.</p>
+</body>
+</html>

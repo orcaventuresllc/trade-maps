@@ -635,11 +635,11 @@
         const metricData = stateCode ? DATA[currentMetric][stateCode] : null;
         const config = METRIC_CONFIG[currentMetric];
         
-        // Update state name
-        document.querySelector('.state-name').textContent = stateName || 'Select a State';
+        // Update state name (in info card, not hover box)
+        document.querySelector('.info-card .state-name').textContent = stateName || 'Select a State';
         
-        // Update metric value
-        const valueElement = document.querySelector('.metric-value');
+        // Update metric value (in info card, not hover box)
+        const valueElement = document.querySelector('.info-card .metric-value');
         if (metricData) {
             const formattedValue = currentMetric === 'glPremiumPct' 
                 ? config.format(metricData) 
@@ -649,12 +649,12 @@
             valueElement.textContent = '--';
         }
         
-        // Update description
-        document.querySelector('.metric-description').textContent = 
+        // Update description (in info card)
+        document.querySelector('.info-card .metric-description').textContent = 
             stateCode ? config.description : 'Click on a state to view insurance metrics';
         
-        // Update CTA link
-        const ctaLink = document.querySelector('.cta-link');
+        // Update CTA link (in info card)
+        const ctaLink = document.querySelector('.info-card .cta-link');
         if (stateCode && stateName) {
             ctaLink.href = `#${stateCode.toLowerCase()}`;
             ctaLink.textContent = `View insurance details for ${stateName} →`;

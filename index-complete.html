@@ -656,8 +656,8 @@
         // Update CTA link (in info card)
         const ctaLink = document.querySelector('.info-card .cta-link');
         if (stateCode && stateName) {
-            ctaLink.href = `#${stateCode.toLowerCase()}`;
-            ctaLink.textContent = `View insurance details for ${stateName} →`;
+            ctaLink.href = 'https://app.contractornerd.com/';
+            ctaLink.textContent = `Get Free Quotes for ${stateName} →`;
             ctaLink.style.display = 'inline-block';
         } else {
             ctaLink.style.display = 'none';

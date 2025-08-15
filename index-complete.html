@@ -100,8 +100,9 @@
         }
         
         .state-path.selected {
-            stroke: #2563eb;
+            stroke: #f73333;
             stroke-width: 2;
+            fill: #ffcccc !important;
         }
         
         /* Info Box Styles (replaces tooltip) */
@@ -326,6 +327,16 @@
             </button>
         </div>
         
+        <!-- Legend -->
+        <div class="map-legend">
+            <span class="legend-title">Legend:</span>
+            <div class="legend-gradient">
+                <span class="legend-min">Low</span>
+                <div class="gradient-bar"></div>
+                <span class="legend-max">High</span>
+            </div>
+        </div>
+        
         <!-- Desktop Map Container -->
         <div class="map-wrapper">
             <!-- SVG Map will go here -->
@@ -413,16 +424,6 @@
                 <a href="#" class="cta-link" style="display: none;">
                     View insurance details →
                 </a>
-            </div>
-        </div>
-        
-        <!-- Legend -->
-        <div class="map-legend">
-            <span class="legend-title">Legend:</span>
-            <div class="legend-gradient">
-                <span class="legend-min">Low</span>
-                <div class="gradient-bar"></div>
-                <span class="legend-max">High</span>
             </div>
         </div>
         

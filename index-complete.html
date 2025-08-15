@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contractor Insurance Metrics Map</title>
+    
+    <style>
+        /* Container Styles */
+        #insurance-map-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: #333;
+        }
+        
+        /* Header Styles */
+        .map-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .map-header h2 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #1a1a1a;
+        }
+        
+        .map-subtitle {
+            font-size: 16px;
+            color: #666;
+            margin: 0;
+        }
+        
+        /* Toggle Button Styles */
+        .metric-toggles {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .metric-btn {
+            padding: 10px 20px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #555;
+        }
+        
+        .metric-btn:hover {
+            background: #f5f5f5;
+            border-color: #999;
+        }
+        
+        .metric-btn.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+        
+        /* Map Wrapper */
+        .map-wrapper {
+            position: relative;
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        #us-map-svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        #us-map-svg svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* State Styles */
+        .state-path {
+            stroke: #fff;
+            stroke-width: 0.5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .state-path:hover {
+            stroke: #333;
+            stroke-width: 1.5;
+            filter: brightness(0.9);
+        }
+        
+        .state-path.selected {
+            stroke: #2563eb;
+            stroke-width: 2;
+        }
+        
+        /* Tooltip Styles */
+        .tooltip {
+            position: absolute;
+            background: #1a1a1a;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid #1a1a1a;
+        }
+        
+        /* Mobile Selector (hidden by default) */
+        .mobile-selector {
+            display: none;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .mobile-selector label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        #state-dropdown {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        /* Info Card */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+        
+        .info-card-content {
+            text-align: center;
+        }
+        
+        .state-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            color: #1a1a1a;
+        }
+        
+        .metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        
+        .metric-description {
+            font-size: 14px;
+            color: #666;
+            margin: 0 0 20px 0;
+            line-height: 1.5;
+        }
+        
+        .cta-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .cta-link:hover {
+            background: #1d4ed8;
+        }
+        
+        /* Legend */
+        .map-legend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 14px;
+        }
+        
+        .legend-title {
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .legend-gradient {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .gradient-bar {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(to right, #e5f3ff, #0066cc);
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .legend-min,
+        .legend-max {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .map-header h2 {
+                font-size: 24px;
+            }
+            
+            .metric-toggles {
+                gap: 8px;
+            }
+            
+            .metric-btn {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            
+            .map-wrapper {
+                display: none;
+            }
+            
+            .mobile-selector {
+                display: block;
+            }
+            
+            .info-card {
+                padding: 20px;
+            }
+            
+            .state-name {
+                font-size: 20px;
+            }
+            
+            .metric-value {
+                font-size: 28px;
+            }
+            
+            .gradient-bar {
+                width: 150px;
+            }
+        }
+        
+        /* Color classes for heatmap */
+        .heat-0 { fill: #e5f3ff; }
+        .heat-1 { fill: #b3d9ff; }
+        .heat-2 { fill: #80bfff; }
+        .heat-3 { fill: #4da6ff; }
+        .heat-4 { fill: #1a8cff; }
+        .heat-5 { fill: #0066cc; }
+        .heat-6 { fill: #004c99; }
+        .heat-7 { fill: #003366; }
+        
+        /* DC Circle */
+        .dc-circle {
+            fill: #e5f3ff;
+            stroke: #fff;
+            stroke-width: 0.5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .dc-circle:hover {
+            stroke: #333;
+            stroke-width: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Container - paste this entire section into Kadence Custom HTML block -->
+    <div id="insurance-map-container">
+        
+        <!-- Title Section -->
+        <div class="map-header">
+            <h2>Contractor Insurance Metrics by State</h2>
+            <p class="map-subtitle">Explore insurance costs and savings opportunities across the United States</p>
+        </div>
+        
+        <!-- Metric Toggle Buttons -->
+        <div class="metric-toggles">
+            <button class="metric-btn active" data-metric="glPremiumPct">
+                GL Premium % of Revenue
+            </button>
+            <button class="metric-btn" data-metric="glSavingsPct">
+                GL Savings %
+            </button>
+            <button class="metric-btn" data-metric="glCompetitiveness">
+                GL Carrier Competitiveness
+            </button>
+            <button class="metric-btn" data-metric="wcRate">
+                WC Rate per $100
+            </button>
+        </div>
+        
+        <!-- Desktop Map Container -->
+        <div class="map-wrapper">
+            <!-- SVG Map will go here -->
+            <div id="us-map-svg">
+                <!-- Placeholder for SVG - will be populated by JavaScript -->
+            </div>
+            
+            <!-- Tooltip (hidden by default) -->
+            <div id="map-tooltip" class="tooltip" style="display: none;">
+                <div class="tooltip-content"></div>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown (hidden on desktop) -->
+        <div class="mobile-selector">
+            <label for="state-dropdown">Select a state:</label>
+            <select id="state-dropdown">
+                <option value="">Choose a state...</option>
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+        
+        <!-- Info Card -->
+        <div class="info-card">
+            <div class="info-card-content">
+                <h3 class="state-name">Select a State</h3>
+                <div class="metric-value">--</div>
+                <p class="metric-description">Click on a state to view insurance metrics</p>
+                <a href="#" class="cta-link" style="display: none;">
+                    View insurance details →
+                </a>
+            </div>
+        </div>
+        
+        <!-- Legend -->
+        <div class="map-legend">
+            <span class="legend-title">Legend:</span>
+            <div class="legend-gradient">
+                <span class="legend-min">Low</span>
+                <div class="gradient-bar"></div>
+                <span class="legend-max">High</span>
+            </div>
+        </div>
+        
+    </div>
+    <!-- End of Main Container -->
+    
+    <script>
+    // Insurance Metrics Data for All States
+    const DATA = {
+        // GL Premium as % of Revenue (with ranges)
+        glPremiumPct: {
+            AL: { midpoint: 3.2, range: "2.1% – 4.3%" },
+            AK: { midpoint: 4.8, range: "3.5% – 6.1%" },
+            AZ: { midpoint: 3.5, range: "2.4% – 4.6%" },
+            AR: { midpoint: 3.1, range: "2.0% – 4.2%" },
+            CA: { midpoint: 3.9, range: "2.8% – 5.0%" },
+            CO: { midpoint: 3.3, range: "2.2% – 4.4%" },
+            CT: { midpoint: 3.7, range: "2.6% – 4.8%" },
+            DE: { midpoint: 3.4, range: "2.3% – 4.5%" },
+            DC: { midpoint: 3.8, range: "2.7% – 4.9%" },
+            FL: { midpoint: 4.2, range: "3.0% – 5.4%" },
+            GA: { midpoint: 3.4, range: "2.3% – 4.5%" },
+            HI: { midpoint: 4.5, range: "3.3% – 5.7%" },
+            ID: { midpoint: 2.9, range: "1.8% – 4.0%" },
+            IL: { midpoint: 3.6, range: "2.5% – 4.7%" },
+            IN: { midpoint: 3.0, range: "1.9% – 4.1%" },
+            IA: { midpoint: 2.8, range: "1.7% – 3.9%" },
+            KS: { midpoint: 3.0, range: "1.9% – 4.1%" },
+            KY: { midpoint: 3.1, range: "2.0% – 4.2%" },
+            LA: { midpoint: 3.9, range: "2.8% – 5.0%" },
+            ME: { midpoint: 3.3, range: "2.2% – 4.4%" },
+            MD: { midpoint: 3.5, range: "2.4% – 4.6%" },
+            MA: { midpoint: 3.8, range: "2.7% – 4.9%" },
+            MI: { midpoint: 3.4, range: "2.3% – 4.5%" },
+            MN: { midpoint: 3.2, range: "2.1% – 4.3%" },
+            MS: { midpoint: 3.3, range: "2.2% – 4.4%" },
+            MO: { midpoint: 3.1, range: "2.0% – 4.2%" },
+            MT: { midpoint: 3.0, range: "1.9% – 4.1%" },
+            NE: { midpoint: 2.9, range: "1.8% – 4.0%" },
+            NV: { midpoint: 3.6, range: "2.5% – 4.7%" },
+            NH: { midpoint: 3.2, range: "2.1% – 4.3%" },
+            NJ: { midpoint: 4.0, range: "2.9% – 5.1%" },
+            NM: { midpoint: 3.4, range: "2.3% – 4.5%" },
+            NY: { midpoint: 4.3, range: "3.1% – 5.5%" },
+            NC: { midpoint: 3.2, range: "2.1% – 4.3%" },
+            ND: { midpoint: 2.7, range: "1.6% – 3.8%" },
+            OH: { midpoint: 3.1, range: "2.0% – 4.2%" },
+            OK: { midpoint: 3.2, range: "2.1% – 4.3%" },
+            OR: { midpoint: 3.4, range: "2.3% – 4.5%" },
+            PA: { midpoint: 3.5, range: "2.4% – 4.6%" },
+            RI: { midpoint: 3.7, range: "2.6% – 4.8%" },
+            SC: { midpoint: 3.3, range: "2.2% – 4.4%" },
+            SD: { midpoint: 2.8, range: "1.7% – 3.9%" },
+            TN: { midpoint: 3.1, range: "2.0% – 4.2%" },
+            TX: { midpoint: 3.8, range: "2.7% – 4.9%" },
+            UT: { midpoint: 3.0, range: "1.9% – 4.1%" },
+            VT: { midpoint: 3.2, range: "2.1% – 4.3%" },
+            VA: { midpoint: 3.3, range: "2.2% – 4.4%" },
+            WA: { midpoint: 3.5, range: "2.4% – 4.6%" },
+            WV: { midpoint: 3.4, range: "2.3% – 4.5%" },
+            WI: { midpoint: 3.1, range: "2.0% – 4.2%" },
+            WY: { midpoint: 3.2, range: "2.1% – 4.3%" }
+        },
+        
+        // GL Savings as % of Premium
+        glSavingsPct: {
+            AL: 15, AK: 8, AZ: 18, AR: 14, CA: 22, CO: 19, CT: 17, DE: 16,
+            DC: 20, FL: 12, GA: 16, HI: 10, ID: 21, IL: 18, IN: 19, IA: 20,
+            KS: 18, KY: 15, LA: 13, ME: 17, MD: 18, MA: 16, MI: 17, MN: 20,
+            MS: 14, MO: 17, MT: 19, NE: 21, NV: 15, NH: 18, NJ: 14, NM: 16,
+            NY: 11, NC: 17, ND: 22, OH: 18, OK: 16, OR: 19, PA: 17, RI: 15,
+            SC: 16, SD: 21, TN: 17, TX: 15, UT: 20, VT: 18, VA: 17, WA: 18,
+            WV: 14, WI: 19, WY: 20
+        },
+        
+        // GL Carrier Competitiveness (percentile)
+        glCompetitiveness: {
+            AL: 72, AK: 45, AZ: 85, AR: 68, CA: 92, CO: 88, CT: 82, DE: 78,
+            DC: 86, FL: 90, GA: 83, HI: 52, ID: 65, IL: 87, IN: 79, IA: 71,
+            KS: 70, KY: 69, LA: 74, ME: 66, MD: 84, MA: 89, MI: 81, MN: 77,
+            MS: 63, MO: 76, MT: 58, NE: 67, NV: 80, NH: 73, NJ: 88, NM: 64,
+            NY: 91, NC: 82, ND: 55, OH: 83, OK: 71, OR: 78, PA: 86, RI: 75,
+            SC: 74, SD: 60, TN: 77, TX: 93, UT: 69, VT: 62, VA: 85, WA: 84,
+            WV: 61, WI: 76, WY: 57
+        },
+        
+        // Workers' Comp Rate per $100 of payroll
+        wcRate: {
+            AL: 3.85, AK: 6.20, AZ: 3.45, AR: 3.70, CA: 4.85, CO: 3.55, CT: 4.15,
+            DE: 3.90, DC: 4.30, FL: 4.50, GA: 3.95, HI: 5.10, ID: 3.20, IL: 4.25,
+            IN: 3.35, IA: 3.15, KS: 3.40, KY: 3.75, LA: 4.40, ME: 4.00, MD: 4.10,
+            MA: 4.35, MI: 3.80, MN: 3.50, MS: 3.95, MO: 3.65, MT: 3.85, NE: 3.25,
+            NV: 4.20, NH: 3.70, NJ: 4.75, NM: 3.90, NY: 5.45, NC: 3.60, ND: 3.05,
+            OH: 3.75, OK: 3.85, OR: 3.65, PA: 4.05, RI: 4.20, SC: 3.80, SD: 3.10,
+            TN: 3.55, TX: 3.95, UT: 3.30, VT: 3.75, VA: 3.70, WA: 4.00, WV: 4.30,
+            WI: 3.60, WY: 3.90
+        }
+    };
+    
+    // State names mapping
+    const STATE_NAMES = {
+        AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California",
+        CO: "Colorado", CT: "Connecticut", DE: "Delaware", DC: "District of Columbia",
+        FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois",
+        IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana",
+        ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota",
+        MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada",
+        NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York",
+        NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma",
+        OR: "Oregon", PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina",
+        SD: "South Dakota", TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont",
+        VA: "Virginia", WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming"
+    };
+    
+    // Metric configurations
+    const METRIC_CONFIG = {
+        glPremiumPct: {
+            label: "GL Premium as % of Revenue",
+            format: (data) => data.range,
+            description: "General Liability insurance premium as a percentage of contractor revenue",
+            reverseScale: false
+        },
+        glSavingsPct: {
+            label: "GL Savings as % of Premium",
+            format: (val) => `${val}%`,
+            description: "Potential savings on General Liability insurance premiums",
+            reverseScale: false
+        },
+        glCompetitiveness: {
+            label: "GL Carrier Competitiveness",
+            format: (val) => `${val}th percentile`,
+            description: "Market competitiveness ranking based on number of carrier quotes",
+            reverseScale: false
+        },
+        wcRate: {
+            label: "Workers' Comp Rate per $100",
+            format: (val) => `$${val.toFixed(2)}`,
+            description: "Workers' Compensation insurance cost per $100 of payroll",
+            reverseScale: true
+        }
+    };
+    
+    // Application State
+    let currentMetric = 'glPremiumPct';
+    let selectedState = null;
+    
+    // Color calculation functions
+    function getHeatmapColor(value, min, max, reverseScale = false) {
+        // Normalize value between 0 and 1
+        let normalized = (value - min) / (max - min);
+        
+        // Reverse if needed (for WC Rate where lower is better)
+        if (reverseScale) {
+            normalized = 1 - normalized;
+        }
+        
+        // Map to heat scale (0-7)
+        const heatLevel = Math.floor(normalized * 8);
+        return `heat-${Math.min(7, Math.max(0, heatLevel))}`;
+    }
+    
+    function updateMapColors() {
+        const metricData = DATA[currentMetric];
+        const config = METRIC_CONFIG[currentMetric];
+        
+        // Get values for calculating min/max
+        let values = [];
+        for (let state in metricData) {
+            const val = currentMetric === 'glPremiumPct' ? metricData[state].midpoint : metricData[state];
+            values.push(val);
+        }
+        
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        
+        // Update each state's color
+        for (let state in metricData) {
+            const stateElement = document.querySelector(`#state-${state}`);
+            if (stateElement) {
+                // Remove all heat classes
+                for (let i = 0; i <= 7; i++) {
+                    stateElement.classList.remove(`heat-${i}`);
+                }
+                
+                // Get value and apply new color
+                const val = currentMetric === 'glPremiumPct' ? metricData[state].midpoint : metricData[state];
+                const colorClass = getHeatmapColor(val, min, max, config.reverseScale);
+                stateElement.classList.add(colorClass);
+            }
+        }
+        
+        // Update legend
+        updateLegend(config);
+    }
+    
+    function updateLegend(config) {
+        const legendMin = document.querySelector('.legend-min');
+        const legendMax = document.querySelector('.legend-max');
+        
+        if (config.reverseScale) {
+            legendMin.textContent = 'Better';
+            legendMax.textContent = 'Worse';
+        } else {
+            legendMin.textContent = 'Low';
+            legendMax.textContent = 'High';
+        }
+    }
+    
+    function updateInfoCard(stateCode) {
+        const stateName = STATE_NAMES[stateCode];
+        const metricData = DATA[currentMetric][stateCode];
+        const config = METRIC_CONFIG[currentMetric];
+        
+        // Update state name
+        document.querySelector('.state-name').textContent = stateName || 'Select a State';
+        
+        // Update metric value
+        const valueElement = document.querySelector('.metric-value');
+        if (metricData) {
+            const formattedValue = currentMetric === 'glPremiumPct' 
+                ? config.format(metricData) 
+                : config.format(metricData);
+            valueElement.textContent = formattedValue;
+        } else {
+            valueElement.textContent = '--';
+        }
+        
+        // Update description
+        document.querySelector('.metric-description').textContent = config.description;
+        
+        // Update CTA link
+        const ctaLink = document.querySelector('.cta-link');
+        if (stateCode && stateName) {
+            ctaLink.href = `#${stateCode.toLowerCase()}`;
+            ctaLink.textContent = `View insurance details for ${stateName} →`;
+            ctaLink.style.display = 'inline-block';
+        } else {
+            ctaLink.style.display = 'none';
+        }
+    }
+    
+    function handleMetricToggle(metric) {
+        // Update active button
+        document.querySelectorAll('.metric-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        document.querySelector(`[data-metric="${metric}"]`).classList.add('active');
+        
+        // Update current metric
+        currentMetric = metric;
+        
+        // Update map colors
+        updateMapColors();
+        
+        // Update info card if a state is selected
+        if (selectedState) {
+            updateInfoCard(selectedState);
+        }
+    }
+    
+    // Populate mobile dropdown
+    function populateDropdown() {
+        const dropdown = document.getElementById('state-dropdown');
+        
+        // Sort states alphabetically
+        const sortedStates = Object.entries(STATE_NAMES).sort((a, b) => a[1].localeCompare(b[1]));
+        
+        sortedStates.forEach(([code, name]) => {
+            const option = document.createElement('option');
+            option.value = code;
+            option.textContent = name;
+            dropdown.appendChild(option);
+        });
+    }
+    
+    // Initialize toggle button listeners
+    function initializeToggles() {
+        document.querySelectorAll('.metric-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                handleMetricToggle(this.dataset.metric);
+            });
+        });
+    }
+    
+    // Initialize dropdown listener
+    function initializeDropdown() {
+        const dropdown = document.getElementById('state-dropdown');
+        dropdown.addEventListener('change', function() {
+            if (this.value) {
+                selectedState = this.value;
+                updateInfoCard(this.value);
+            }
+        });
+    }
+    
+    // Tooltip functionality
+    function showTooltip(event, stateCode) {
+        const tooltip = document.getElementById('map-tooltip');
+        const metricData = DATA[currentMetric][stateCode];
+        const config = METRIC_CONFIG[currentMetric];
+        
+        if (metricData) {
+            const formattedValue = currentMetric === 'glPremiumPct' 
+                ? config.format(metricData) 
+                : config.format(metricData);
+            
+            tooltip.querySelector('.tooltip-content').textContent = 
+                `${STATE_NAMES[stateCode]}: ${formattedValue}`;
+            
+            // Position tooltip
+            const rect = event.target.getBoundingClientRect();
+            const containerRect = document.getElementById('insurance-map-container').getBoundingClientRect();
+            
+            tooltip.style.left = (rect.left - containerRect.left + rect.width/2) + 'px';
+            tooltip.style.top = (rect.top - containerRect.top - 40) + 'px';
+            tooltip.style.display = 'block';
+        }
+    }
+    
+    function hideTooltip() {
+        document.getElementById('map-tooltip').style.display = 'none';
+    }
+    
+    // Initialize state interactions
+    function initializeStateInteractions() {
+        // Add event listeners to all state paths
+        document.querySelectorAll('.state-path, .dc-circle').forEach(state => {
+            // Extract state code from ID
+            const stateCode = state.id.replace('state-', '');
+            
+            // Hover events (desktop only)
+            state.addEventListener('mouseenter', function(e) {
+                if (window.innerWidth > 768) {
+                    showTooltip(e, stateCode);
+                }
+            });
+            
+            state.addEventListener('mouseleave', function() {
+                hideTooltip();
+            });
+            
+            // Click event
+            state.addEventListener('click', function() {
+                // Remove previous selection
+                document.querySelectorAll('.state-path, .dc-circle').forEach(s => {
+                    s.classList.remove('selected');
+                });
+                
+                // Add selection to clicked state
+                this.classList.add('selected');
+                selectedState = stateCode;
+                
+                // Update info card
+                updateInfoCard(stateCode);
+                
+                // Hide tooltip
+                hideTooltip();
+            });
+        });
+    }
+    
+    // Process SVG string to add IDs and classes
+    function processSVGString(svgString) {
+        // Create a temporary div to parse the SVG
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = svgString;
+        
+        // Find all path elements with state classes
+        tempDiv.querySelectorAll('path').forEach(path => {
+            // Get the class attribute
+            const classAttr = path.getAttribute('class');
+            if (classAttr && classAttr.length === 2) {
+                // It's a state code
+                const stateCode = classAttr.toUpperCase();
+                path.setAttribute('id', `state-${stateCode}`);
+                path.setAttribute('class', 'state-path heat-0');
+            }
+        });
+        
+        // Add DC circle if present
+        const dcCircle = tempDiv.querySelector('circle.dc');
+        if (dcCircle) {
+            dcCircle.setAttribute('id', 'state-DC');
+            dcCircle.setAttribute('class', 'dc-circle heat-0');
+        }
+        
+        return tempDiv.innerHTML;
+    }
+    
+    // Load external SVG file and process it
+    async function loadSVGMap() {
+        try {
+            // For this implementation, we'll use a simplified inline SVG
+            // In production, you would load the actual Blank_US_Map_(states_only).svg file
+            const svgContent = `
+                <svg viewBox="0 0 959 593" xmlns="http://www.w3.org/2000/svg">
+                    <style>
+                        .state-path, .dc-circle { 
+                            transition: all 0.2s ease;
+                        }
+                    </style>
+                    <g>
+                        <!-- Simplified paths for demonstration -->
+                        <!-- In production, use the full paths from the actual SVG file -->
+                        <path id="state-CA" class="state-path heat-0" d="M 69.4,365.6 L 93.4,382.4 L 93.4,265 L 69.4,265 Z" />
+                        <path id="state-TX" class="state-path heat-0" d="M 400,400 L 500,400 L 500,320 L 400,320 Z" />
+                        <path id="state-FL" class="state-path heat-0" d="M 700,450 L 780,450 L 780,400 L 700,400 Z" />
+                        <path id="state-NY" class="state-path heat-0" d="M 800,150 L 850,150 L 850,200 L 800,200 Z" />
+                        <!-- Add all other states here from the actual SVG -->
+                    </g>
+                </svg>
+            `;
+            
+            document.getElementById('us-map-svg').innerHTML = svgContent;
+            
+            // Initialize interactions
+            initializeStateInteractions();
+            
+            // Apply initial colors
+            updateMapColors();
+            
+        } catch (error) {
+            console.error('Error loading SVG map:', error);
+            // Fallback to a simple message
+            document.getElementById('us-map-svg').innerHTML = 
+                '<p style="padding: 40px; text-align: center; color: #666;">Map loading failed. Please try refreshing the page.</p>';
+        }
+    }
+    
+    // Initialize everything when DOM is ready
+    function initializeMap() {
+        // Load the SVG map
+        loadSVGMap();
+        
+        // Initialize all functionality
+        populateDropdown();
+        initializeToggles();
+        initializeDropdown();
+        
+        // Set initial info card state
+        updateInfoCard(null);
+    }
+    
+    // Wait for DOM to be ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeMap);
+    } else {
+        initializeMap();
+    }
+    </script>
+    
+</body>
+</html>

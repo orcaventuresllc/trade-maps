@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Console Debug</title>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('=== DEBUG START ===');
+            
+            // Check for SVG element
+            const svgElement = document.querySelector('svg');
+            console.log('SVG element found:', svgElement);
+            
+            // Check for state paths
+            const statePaths = document.querySelectorAll('.state-path');
+            console.log('Number of .state-path elements:', statePaths.length);
+            
+            // Check if paths have IDs
+            if (statePaths.length > 0) {
+                console.log('First 5 state path IDs:');
+                for (let i = 0; i < Math.min(5, statePaths.length); i++) {
+                    console.log('  -', statePaths[i].id);
+                }
+            }
+            
+            // Check the viewBox
+            if (svgElement) {
+                console.log('SVG viewBox:', svgElement.getAttribute('viewBox'));
+                console.log('SVG width:', svgElement.getAttribute('width'));
+                console.log('SVG height:', svgElement.getAttribute('height'));
+                console.log('SVG computed size:', svgElement.getBoundingClientRect());
+            }
+            
+            // Try the original selector from the code
+            const testStateCA = document.querySelector('#state-CA');
+            console.log('Can find #state-CA?', testStateCA);
+            
+            // Check if fill styles are applied
+            if (statePaths.length > 0) {
+                const computedStyle = window.getComputedStyle(statePaths[0]);
+                console.log('First path fill color:', computedStyle.fill);
+                console.log('First path stroke:', computedStyle.stroke);
+            }
+            
+            console.log('=== DEBUG END ===');
+        });
+    </script>
+</head>
+<body>
+    <h1>Open Developer Console (F12) to see debug output</h1>
+    <p>Then load index-complete.html in another tab and check the console there too.</p>
+    
+    <h2>Add this to index-complete.html temporarily:</h2>
+    <pre style="background: #f0f0f0; padding: 10px;">
+&lt;script&gt;
+console.log('Script running');
+console.log('State paths found:', document.querySelectorAll('.state-path').length);
+&lt;/script&gt;
+    </pre>
+</body>
+</html>

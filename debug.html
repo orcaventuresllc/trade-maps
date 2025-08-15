@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+    <h1>JavaScript Debug Test</h1>
+    
+    <div id="test-div">
+        <svg viewBox="0 0 959 593" width="959" height="593">
+            <g class="state">
+                <path id="state-AL" class="state-path" d="m 643,467.4 .4,-7.3 -.9,-1.2 z"></path>
+                <path id="state-CA" class="state-path" d="m 69.4,365.6 3.4,5.2 -1.4,.1 z"></path>
+            </g>
+        </svg>
+    </div>
+    
+    <div id="debug-output"></div>
+    
+    <script>
+        // Test if JavaScript runs at all
+        console.log('JavaScript is running');
+        document.getElementById('debug-output').innerHTML = '<h2>JavaScript Status:</h2>';
+        
+        // Test if we can find the SVG
+        const svg = document.querySelector('svg');
+        if (svg) {
+            document.getElementById('debug-output').innerHTML += '<p>✅ SVG found</p>';
+            console.log('SVG found:', svg);
+        } else {
+            document.getElementById('debug-output').innerHTML += '<p>❌ SVG NOT found</p>';
+        }
+        
+        // Test if we can find state paths
+        const paths = document.querySelectorAll('.state-path');
+        document.getElementById('debug-output').innerHTML += '<p>State paths found: ' + paths.length + '</p>';
+        console.log('Paths found:', paths.length);
+        
+        // Test if we can find specific states
+        const alabama = document.getElementById('state-AL');
+        if (alabama) {
+            document.getElementById('debug-output').innerHTML += '<p>✅ Alabama path found</p>';
+            console.log('Alabama found:', alabama);
+        } else {
+            document.getElementById('debug-output').innerHTML += '<p>❌ Alabama NOT found</p>';
+        }
+        
+        // Test querySelector with ID
+        const stateCA = document.querySelector('#state-CA');
+        if (stateCA) {
+            document.getElementById('debug-output').innerHTML += '<p>✅ California found with querySelector</p>';
+        } else {
+            document.getElementById('debug-output').innerHTML += '<p>❌ California NOT found with querySelector</p>';
+        }
+    </script>
+</body>
+</html>

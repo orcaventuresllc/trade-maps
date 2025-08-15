@@ -890,6 +890,21 @@
     
     // Initialize everything when DOM is ready
     function initializeMap() {
+        console.log('initializeMap called');
+        
+        // Check if we can find the SVG and states
+        const svgElement = document.querySelector('#us-map-svg svg');
+        const statePaths = document.querySelectorAll('.state-path');
+        console.log('SVG found:', svgElement);
+        console.log('State paths found:', statePaths.length);
+        
+        if (statePaths.length === 0) {
+            console.error('ERROR: No state paths found! Check if SVG is in DOM');
+            // Try to find any path elements
+            const anyPaths = document.querySelectorAll('path');
+            console.log('Total path elements in document:', anyPaths.length);
+        }
+        
         // Initialize state interactions (SVG is already in DOM)
         initializeStateInteractions();
         

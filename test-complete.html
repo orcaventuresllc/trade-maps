@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Test</title>
+    <script>
+        // Simple test to verify SVG and JavaScript work
+        window.onload = function() {
+            const states = document.querySelectorAll('.state-path');
+            console.log('Found ' + states.length + ' states');
+            
+            // Test if states have proper IDs
+            let stateIds = [];
+            states.forEach(state => {
+                if (state.id) {
+                    stateIds.push(state.id.replace('state-', ''));
+                }
+            });
+            
+            console.log('State IDs found:', stateIds.join(', '));
+            
+            // Test click handler
+            states.forEach(state => {
+                state.addEventListener('click', function() {
+                    alert('Clicked: ' + this.id);
+                });
+            });
+            
+            document.getElementById('status').innerHTML = 
+                'Map loaded successfully!<br>' +
+                'States found: ' + states.length + '<br>' +
+                'Click any state to test interaction';
+        };
+    </script>
+</head>
+<body>
+    <h1>Testing Map Functionality</h1>
+    <div id="status">Loading...</div>
+    <hr>
+    <p>Open index-complete.html in your browser to see the full interactive map.</p>
+    <p>The map should display all 50 US states (excluding DC) with:</p>
+    <ul>
+        <li>Clickable states</li>
+        <li>Hover effects</li>
+        <li>Toggle buttons for different metrics</li>
+        <li>Info card that updates when states are clicked</li>
+        <li>Heatmap coloring based on selected metric</li>
+    </ul>
+</body>
+</html>

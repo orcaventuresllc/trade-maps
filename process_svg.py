@@ -1,7 +1,7 @@
 import re
 
 # Read the SVG file
-with open('/Users/curranclark/Documents/trade-maps/Blank_US_Map_(states_only).svg', 'r') as f:
+with open('/Users/curranclark/Documents/trade-maps/US_Map.svg', 'r') as f:
     content = f.read()
 
 # Extract all path elements with state classes

@@ -82,7 +82,7 @@ function createSVGMap() {
                 }
             </style>
             <g>
-                <!-- Simplified state paths - in production, use full paths from Blank_US_Map_(states_only).svg -->
+                <!-- Simplified state paths - in production, use full paths from US_Map.svg -->
                 <!-- California -->
                 <path id="state-CA" class="state-path heat-0" d="M 69.4,365.6 L 93.4,382.4 L 93.4,265 L 69.4,265 Z" />
                 <!-- Texas -->
@@ -126,7 +126,7 @@ if (document.readyState === 'loading') {
 
 // IMPORTANT NOTE:
 // To use the full US map, replace the createSVGMap() function with code that:
-// 1. Loads the content from Blank_US_Map_(states_only).svg
+// 1. Loads the content from US_Map.svg
 // 2. Processes each <path> element to add:
 //    - id="state-XX" where XX is the state code (extracted from class attribute)
 //    - class="state-path heat-0"

@@ -1,0 +1,600 @@
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8fafc;
+    }
+    
+    .debug-panel {
+        background: #000;
+        color: #0f0;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        font-family: monospace;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+    
+    .header {
+        text-align: center;
+        padding: 40px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    
+    .header p {
+        margin: 0;
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .content {
+        display: flex;
+        min-height: 600px;
+    }
+    
+    .map-section {
+        flex: 1;
+        padding: 40px;
+        background: #f8fafc;
+    }
+    
+    .info-section {
+        width: 350px;
+        padding: 40px;
+        background: white;
+        border-left: 1px solid #e2e8f0;
+    }
+    
+    .controls {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    
+    .metric-btn {
+        padding: 12px 20px;
+        border: 2px solid #e2e8f0;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+        font-size: 14px;
+        color: #64748b;
+    }
+    
+    .metric-btn:hover {
+        border-color: #3b82f6;
+        color: #3b82f6;
+    }
+    
+    .metric-btn.active {
+        background: #3b82f6;
+        border-color: #3b82f6;
+        color: white;
+    }
+    
+    .legend {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+    
+    .legend-label {
+        font-weight: 600;
+        color: #374151;
+    }
+    
+    .legend-gradient {
+        flex: 1;
+        height: 20px;
+        background: linear-gradient(to right, #dbeafe, #3b82f6);
+        border-radius: 10px;
+    }
+    
+    .legend-min, .legend-max {
+        font-size: 12px;
+        color: #6b7280;
+        font-weight: 500;
+    }
+    
+    .map-wrapper {
+        position: relative;
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    #us-map {
+        width: 100%;
+        height: auto;
+    }
+    
+    .state-path {
+        fill: #e5e7eb;
+        stroke: #ffffff;
+        stroke-width: 1;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .state-path:hover {
+        stroke: #3b82f6;
+        stroke-width: 2;
+    }
+    
+    .state-path.selected {
+        stroke: #1d4ed8;
+        stroke-width: 3;
+    }
+    
+    .heat-0 { fill: #dbeafe; }
+    .heat-1 { fill: #bfdbfe; }
+    .heat-2 { fill: #93c5fd; }
+    .heat-3 { fill: #60a5fa; }
+    .heat-4 { fill: #3b82f6; }
+    .heat-5 { fill: #2563eb; }
+    .heat-6 { fill: #1d4ed8; }
+    .heat-7 { fill: #1e40af; }
+    
+    #map-tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.9);
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        pointer-events: none;
+        z-index: 1000;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .tooltip-state {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    
+    .tooltip-metric {
+        font-size: 12px;
+        opacity: 0.8;
+    }
+    
+    .info-card {
+        background: #f8fafc;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 20px;
+    }
+    
+    .info-card h2 {
+        margin: 0 0 16px 0;
+        font-size: 1.5rem;
+        color: #1f2937;
+    }
+    
+    .state-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #3b82f6;
+        margin-bottom: 8px;
+    }
+    
+    .metric-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    
+    .metric-description {
+        color: #6b7280;
+        line-height: 1.5;
+        margin-bottom: 16px;
+    }
+    
+    .cta-link {
+        display: inline-block;
+        background: #3b82f6;
+        color: white;
+        padding: 12px 20px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background 0.2s;
+    }
+    
+    .cta-link:hover {
+        background: #2563eb;
+    }
+    
+    @media (max-width: 768px) {
+        .content {
+            flex-direction: column;
+        }
+        
+        .info-section {
+            width: auto;
+            border-left: none;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .controls {
+            justify-content: center;
+        }
+        
+        .map-section, .info-section {
+            padding: 20px;
+        }
+    }
+</style>
+
+<div class="debug-panel" id="debug-console">
+    <div><strong>WordPress Debug Console (Fixed):</strong></div>
+</div>
+
+<div class="container" id="insurance-map-container">
+    <div class="header">
+        <h1>Carpenter Insurance Cost Metrics by State</h1>
+        <p>Explore insurance costs and savings opportunities across the United States</p>
+    </div>
+    
+    <div class="content">
+        <div class="map-section">
+            <div class="controls">
+                <button class="metric-btn active" data-metric="glPremiumPct">GL Premium % of Revenue</button>
+                <button class="metric-btn" data-metric="glSavingsPct">GL Savings %</button>
+                <button class="metric-btn" data-metric="glCompetitiveness">GL Carrier Competitiveness</button>
+                <button class="metric-btn" data-metric="wcRate">WC Rate per $100</button>
+            </div>
+            
+            <div class="legend">
+                <span class="legend-label">Legend:</span>
+                <span class="legend-min">Low</span>
+                <div class="legend-gradient"></div>
+                <span class="legend-max">High</span>
+            </div>
+            
+            <div class="map-wrapper">
+                <svg id="us-map" viewBox="0 0 1000 600">
+                    <!-- Simple test rectangles instead of full state paths -->
+                    <rect id="state-CA" class="state-path" x="50" y="300" width="80" height="60" />
+                    <text x="90" y="335" fill="black" pointer-events="none" text-anchor="middle">CA</text>
+                    
+                    <rect id="state-TX" class="state-path" x="400" y="400" width="80" height="60" />
+                    <text x="440" y="435" fill="black" pointer-events="none" text-anchor="middle">TX</text>
+                    
+                    <rect id="state-NY" class="state-path" x="800" y="200" width="80" height="60" />
+                    <text x="840" y="235" fill="black" pointer-events="none" text-anchor="middle">NY</text>
+                </svg>
+                
+                <div id="map-tooltip">
+                    <div class="tooltip-state state-name"></div>
+                    <div class="tooltip-metric">
+                        <span class="metric-label"></span>: <span class="metric-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-card">
+                <h2>Select a State</h2>
+                <div class="state-name">Select a State</div>
+                <div class="metric-value">--</div>
+                <p class="metric-description">Click on a state to view insurance metrics</p>
+                <a href="#" class="cta-link" style="display: none;">Get Free Quotes →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Main WordPress-compatible script - NO TEMPLATE LITERALS, NO ARROW FUNCTIONS
+(function () {
+    // Debug logging function - moved inside IIFE
+    function debugLog(message) {
+        try {
+            var consoleEl = document.getElementById('debug-console');
+            var timestamp = new Date().toLocaleTimeString();
+            if (consoleEl) {
+                consoleEl.innerHTML = consoleEl.innerHTML + '<div>[' + timestamp + '] ' + message + '</div>';
+                consoleEl.scrollTop = consoleEl.scrollHeight;
+            }
+            // Also log to browser console
+            if (typeof console !== 'undefined' && console.log) {
+                console.log(message);
+            }
+        } catch (e) {
+            // Silent fail if debug logging fails
+        }
+    }
+    
+    try {
+        debugLog('=== WORDPRESS DEBUG VERSION STARTING (FIXED) ===');
+        
+        // Check if we're in WordPress (moved inside and fixed)
+        function detectWordPress() {
+            try {
+                var bodyEl = document.querySelector('body');
+                var hasWpClass = bodyEl && bodyEl.className && bodyEl.className.indexOf('wp-') !== -1;
+                var hasWpScripts = document.querySelector('script[src*="wp-content"]') !== null;
+                var hasWpGlobal = typeof wp !== 'undefined';
+                var hasWpStyles = document.querySelector('link[href*="wp-content"]') !== null;
+                
+                var isWordPress = hasWpClass || hasWpScripts || hasWpGlobal || hasWpStyles;
+                
+                debugLog('WordPress detection: ' + (isWordPress ? 'DETECTED' : 'NOT DETECTED'));
+                debugLog('- Body class contains wp-: ' + hasWpClass);
+                debugLog('- wp-content scripts found: ' + hasWpScripts);
+                debugLog('- Global wp object exists: ' + hasWpGlobal);
+                debugLog('- wp-content stylesheets found: ' + hasWpStyles);
+            } catch (e) {
+                debugLog('ERROR in detectWordPress: ' + e.message);
+            }
+        }
+        
+        detectWordPress();
+        
+        // Check if container exists
+        var container = document.getElementById('insurance-map-container');
+        debugLog('Container found: ' + (container !== null));
+        
+        // Sample data for testing
+        window.DATA = {
+            glPremiumPct: {
+                CA: { midpoint: 3.9, range: "2.8% – 5.0%" },
+                TX: { midpoint: 3.8, range: "2.7% – 4.9%" },
+                NY: { midpoint: 4.3, range: "3.1% – 5.5%" }
+            },
+            glSavingsPct: { CA: 22, TX: 15, NY: 11 },
+            glCompetitiveness: { CA: 92, TX: 93, NY: 91 },
+            wcRate: { CA: 4.85, TX: 3.95, NY: 5.45 }
+        };
+        
+        window.STATE_NAMES = {
+            CA: "California",
+            TX: "Texas", 
+            NY: "New York"
+        };
+        
+        window.METRIC_CONFIG = {
+            glPremiumPct: {
+                label: "GL Premium as % of Revenue",
+                format: function(data) { return data.range; },
+                description: "General Liability insurance premium as a percentage of contractor revenue"
+            },
+            glSavingsPct: {
+                label: "GL Savings as % of Premium",
+                format: function(val) { return val + '%'; },
+                description: "Potential savings on General Liability insurance premiums"
+            },
+            glCompetitiveness: {
+                label: "GL Carrier Competitiveness",
+                format: function(val) { return val + 'th percentile'; },
+                description: "Market competitiveness ranking based on number of carrier quotes"
+            },
+            wcRate: {
+                label: "Workers' Comp Rate per $100",
+                format: function(val) { return '$' + val.toFixed(2); },
+                description: "Workers' Compensation insurance cost per $100 of payroll"
+            }
+        };
+        
+        window.currentMetric = 'glPremiumPct';
+        window.selectedState = null;
+        
+        debugLog('Global data objects created successfully');
+        
+        // Define global functions
+        window.handleMetricToggle = function(metric) {
+            debugLog('handleMetricToggle called with: ' + metric);
+            
+            try {
+                // Update buttons
+                var buttons = document.querySelectorAll('.metric-btn');
+                for (var i = 0; i < buttons.length; i++) {
+                    buttons[i].classList.remove('active');
+                }
+                
+                var targetBtn = document.querySelector('[data-metric="' + metric + '"]');
+                if (targetBtn) {
+                    targetBtn.classList.add('active');
+                    debugLog('Button activated for: ' + metric);
+                } else {
+                    debugLog('ERROR: Target button not found for: ' + metric);
+                }
+                
+                window.currentMetric = metric;
+                debugLog('Current metric set to: ' + metric);
+                
+                // Update info card if state is selected
+                if (window.selectedState) {
+                    updateInfoCard(window.selectedState);
+                }
+            } catch (e) {
+                debugLog('ERROR in handleMetricToggle: ' + e.message);
+            }
+        };
+        
+        window.handleStateClick = function(stateCode) {
+            debugLog('handleStateClick called with: ' + stateCode);
+            
+            try {
+                var state = document.getElementById('state-' + stateCode);
+                if (!state) {
+                    debugLog('ERROR: State element not found');
+                    return;
+                }
+                
+                var isSelected = state.classList.contains('selected');
+                
+                // Remove all selections
+                var allStates = document.querySelectorAll('.state-path');
+                for (var i = 0; i < allStates.length; i++) {
+                    allStates[i].classList.remove('selected');
+                }
+                
+                if (!isSelected) {
+                    state.classList.add('selected');
+                    window.selectedState = stateCode;
+                    debugLog('State ' + stateCode + ' selected');
+                    updateInfoCard(stateCode);
+                } else {
+                    window.selectedState = null;
+                    debugLog('State deselected');
+                    updateInfoCard(null);
+                }
+            } catch (e) {
+                debugLog('ERROR in handleStateClick: ' + e.message);
+            }
+        };
+        
+        function updateInfoCard(stateCode) {
+            try {
+                var nameEl = document.querySelector('.info-card .state-name');
+                var valueEl = document.querySelector('.info-card .metric-value');
+                var descEl = document.querySelector('.info-card .metric-description');
+                
+                if (stateCode) {
+                    var stateName = window.STATE_NAMES[stateCode];
+                    var metric = window.currentMetric;
+                    var data = window.DATA[metric][stateCode];
+                    var config = window.METRIC_CONFIG[metric];
+                    
+                    if (nameEl) nameEl.textContent = stateName;
+                    if (valueEl) {
+                        if (metric === 'glPremiumPct') {
+                            valueEl.textContent = config.format(data);
+                        } else {
+                            valueEl.textContent = config.format(data);
+                        }
+                    }
+                    if (descEl) descEl.textContent = config.description;
+                    
+                    debugLog('Info card updated for ' + stateName);
+                } else {
+                    if (nameEl) nameEl.textContent = 'Select a State';
+                    if (valueEl) valueEl.textContent = '--';
+                    if (descEl) descEl.textContent = 'Click on a state to view insurance metrics';
+                    debugLog('Info card reset');
+                }
+            } catch (e) {
+                debugLog('ERROR in updateInfoCard: ' + e.message);
+            }
+        }
+        
+        debugLog('Global functions defined successfully');
+        
+        // Test inline onclick functionality
+        function testInlineHandlers() {
+            try {
+                debugLog('=== TESTING INLINE HANDLERS ===');
+                
+                var buttons = document.querySelectorAll('.metric-btn');
+                debugLog('Found ' + buttons.length + ' buttons');
+                
+                for (var i = 0; i < buttons.length; i++) {
+                    var hasOnclick = buttons[i].hasAttribute('onclick');
+                    var onclickValue = buttons[i].getAttribute('onclick');
+                    debugLog('Button ' + (i + 1) + ': onclick=' + (hasOnclick ? 'EXISTS' : 'MISSING') + ' value=' + onclickValue);
+                }
+                
+                var states = document.querySelectorAll('.state-path');
+                debugLog('Found ' + states.length + ' states');
+                
+                for (var j = 0; j < states.length; j++) {
+                    var stateHasOnclick = states[j].hasAttribute('onclick');
+                    var stateOnclickValue = states[j].getAttribute('onclick');
+                    debugLog('State ' + (j + 1) + ': onclick=' + (stateHasOnclick ? 'EXISTS' : 'MISSING') + ' value=' + stateOnclickValue);
+                }
+            } catch (e) {
+                debugLog('ERROR in testInlineHandlers: ' + e.message);
+            }
+        }
+        
+        // Add event listeners as fallback
+        function addEventListeners() {
+            try {
+                debugLog('=== ADDING EVENT LISTENERS AS FALLBACK ===');
+                
+                var buttons = document.querySelectorAll('.metric-btn');
+                for (var i = 0; i < buttons.length; i++) {
+                    (function(btn) {
+                        var metric = btn.getAttribute('data-metric');
+                        btn.addEventListener('click', function() {
+                            debugLog('addEventListener: Button clicked - ' + metric);
+                            window.handleMetricToggle(metric);
+                        });
+                    })(buttons[i]);
+                }
+                debugLog('Added event listeners to ' + buttons.length + ' buttons');
+                
+                var states = document.querySelectorAll('.state-path');
+                for (var j = 0; j < states.length; j++) {
+                    (function(state) {
+                        var stateCode = state.id.replace('state-', '');
+                        state.addEventListener('click', function() {
+                            debugLog('addEventListener: State clicked - ' + stateCode);
+                            window.handleStateClick(stateCode);
+                        });
+                    })(states[j]);
+                }
+                debugLog('Added event listeners to ' + states.length + ' states');
+                
+            } catch (e) {
+                debugLog('ERROR in addEventListeners: ' + e.message);
+            }
+        }
+        
+        // Initialize everything
+        function init() {
+            try {
+                debugLog('=== INITIALIZATION STARTING ===');
+                
+                testInlineHandlers();
+                addEventListeners();
+                
+                // Set initial colors
+                var states = document.querySelectorAll('.state-path');
+                for (var i = 0; i < states.length; i++) {
+                    states[i].classList.add('heat-3');
+                }
+                
+                debugLog('=== INITIALIZATION COMPLETE ===');
+                debugLog('Try clicking buttons and states to test functionality');
+            } catch (e) {
+                debugLog('ERROR in init: ' + e.message);
+            }
+        }
+        
+        // Run initialization
+        init();
+        
+    } catch (error) {
+        debugLog('FATAL ERROR: ' + error.message);
+    }
+})();
+</script>

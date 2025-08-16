@@ -332,16 +332,16 @@
         
         <!-- Metric Toggle Buttons -->
         <div class="metric-toggles">
-            <button class="metric-btn active" data-metric="glPremiumPct">
+            <button class="metric-btn active" data-metric="glPremiumPct" onclick="window.handleMetricToggle('glPremiumPct')">
                 GL Premium % of Revenue
             </button>
-            <button class="metric-btn" data-metric="glSavingsPct">
+            <button class="metric-btn" data-metric="glSavingsPct" onclick="window.handleMetricToggle('glSavingsPct')">
                 GL Savings %
             </button>
-            <button class="metric-btn" data-metric="glCompetitiveness">
+            <button class="metric-btn" data-metric="glCompetitiveness" onclick="window.handleMetricToggle('glCompetitiveness')">
                 GL Carrier Competitiveness
             </button>
-            <button class="metric-btn" data-metric="wcRate">
+            <button class="metric-btn" data-metric="wcRate" onclick="window.handleMetricToggle('wcRate')">
                 WC Rate per $100
             </button>
         </div>
@@ -453,8 +453,14 @@
     <!-- End of Main Container -->
     
     <script>
+    // Debug message to confirm JavaScript is running
+    console.log('=== WORDPRESS DEBUG: JavaScript is executing ===');
+    
+    // Make everything global for WordPress compatibility
+    window.mapDebug = true;
+    
     // Insurance Metrics Data for All States (without DC)
-    const DATA = {
+    window.DATA = {
         // GL Premium as % of Revenue (with ranges)
         glPremiumPct: {
             AL: { midpoint: 3.2, range: "2.1% – 4.3%" },
@@ -545,7 +551,7 @@
     };
     
     // State names mapping (without DC)
-    const STATE_NAMES = {
+    window.STATE_NAMES = {
         AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California",
         CO: "Colorado", CT: "Connecticut", DE: "Delaware", FL: "Florida", GA: "Georgia",
         HI: "Hawaii", ID: "Idaho", IL: "Illinois", IN: "Indiana", IA: "Iowa",
@@ -560,7 +566,7 @@
     };
     
     // Metric configurations
-    const METRIC_CONFIG = {
+    window.METRIC_CONFIG = {
         glPremiumPct: {
             label: "GL Premium as % of Revenue",
             format: (data) => data.range,
@@ -588,8 +594,8 @@
     };
     
     // Application State
-    let currentMetric = 'glPremiumPct';
-    let selectedState = null;
+    window.currentMetric = 'glPremiumPct';
+    window.selectedState = null;
     
     // Color calculation functions
     function getHeatmapColor(value, min, max, reverseScale = false) {
@@ -606,9 +612,9 @@
         return `heat-${Math.min(7, Math.max(0, heatLevel))}`;
     }
     
-    function updateMapColors() {
-        const metricData = DATA[currentMetric];
-        const config = METRIC_CONFIG[currentMetric];
+    window.updateMapColors = function() {
+        const metricData = window.DATA[window.currentMetric];
+        const config = window.METRIC_CONFIG[window.currentMetric];
         
         // Get values for calculating min/max
         let values = [];
@@ -653,7 +659,7 @@
         }
     }
     
-    function updateInfoCard(stateCode) {
+    window.updateInfoCard = function(stateCode) {
         const stateName = STATE_NAMES[stateCode];
         const metricData = stateCode ? DATA[currentMetric][stateCode] : null;
         const config = METRIC_CONFIG[currentMetric];
@@ -687,7 +693,8 @@
         }
     }
     
-    function handleMetricToggle(metric) {
+    window.handleMetricToggle = function(metric) {
+        console.log('Button clicked:', metric);
         // Update active button
         document.querySelectorAll('.metric-btn').forEach(btn => {
             btn.classList.remove('active');
@@ -698,14 +705,14 @@
         }
         
         // Update current metric
-        currentMetric = metric;
+        window.currentMetric = metric;
         
         // Update map colors
-        updateMapColors();
+        window.updateMapColors();
         
         // Update info card if a state is selected
-        if (selectedState) {
-            updateInfoCard(selectedState);
+        if (window.selectedState) {
+            window.updateInfoCard(window.selectedState);
         }
     }
     
@@ -725,18 +732,9 @@
         });
     }
     
-    // Initialize toggle button listeners using event delegation
+    // Initialize toggle button listeners - now using inline onclick
     function initializeToggles() {
-        console.log('Initializing toggle buttons...');
-        
-        // Use event delegation for better WordPress compatibility
-        document.addEventListener('click', function(e) {
-            // Check if clicked element is a metric button
-            if (e.target.classList.contains('metric-btn')) {
-                console.log('Metric button clicked:', e.target.dataset.metric);
-                handleMetricToggle(e.target.dataset.metric);
-            }
-        });
+        console.log('Buttons using inline onclick handlers');
     }
     
     // Initialize dropdown listener
@@ -753,7 +751,7 @@
     }
     
     // Info Box functionality (replaces tooltip)
-    function showTooltip(event, stateCode) {
+    window.showTooltip = function(event, stateCode) {
         const tooltip = document.getElementById('map-tooltip');
         const metricData = DATA[currentMetric][stateCode];
         const config = METRIC_CONFIG[currentMetric];
@@ -790,69 +788,67 @@
         }
     }
     
-    function hideTooltip() {
+    window.hideTooltip = function() {
         const tooltip = document.getElementById('map-tooltip');
         if (tooltip) {
             tooltip.style.display = 'none';
         }
     }
     
-    // Initialize state interactions using event delegation
-    function initializeStateInteractions() {
-        const statePaths = document.querySelectorAll('.state-path');
-        console.log('Initializing ' + statePaths.length + ' state paths');
+    // Global state click handler for inline onclick
+    window.handleStateClick = function(stateCode) {
+        console.log('State clicked (inline):', stateCode);
         
-        // Use event delegation on the SVG container for better WordPress compatibility
-        const svgContainer = document.querySelector('#us-map-svg svg');
-        if (!svgContainer) {
-            console.error('SVG container not found');
-            return;
+        const state = document.getElementById('state-' + stateCode);
+        if (!state) return;
+        
+        // Check if this state is already selected
+        const isAlreadySelected = state.classList.contains('selected');
+        
+        // Remove previous selection from all states
+        document.querySelectorAll('.state-path').forEach(s => {
+            s.classList.remove('selected');
+        });
+        
+        if (isAlreadySelected) {
+            // If clicking the same state, deselect it
+            window.selectedState = null;
+            window.updateInfoCard(null);
+        } else {
+            // If clicking a different state, select it
+            state.classList.add('selected');
+            window.selectedState = stateCode;
+            window.updateInfoCard(stateCode);
         }
         
-        // Delegated click handler
-        svgContainer.addEventListener('click', function(e) {
-            const state = e.target.closest('.state-path');
-            if (!state) return;
-            
+        window.hideTooltip();
+    }
+    
+    // Global state hover handlers
+    window.handleStateHover = function(event, stateCode) {
+        if (window.innerWidth > 768) {
+            window.showTooltip(event, stateCode);
+        }
+    }
+    
+    window.handleStateLeave = function() {
+        window.hideTooltip();
+    }
+    
+    // Simple initialization - add onclick to all states
+    function initializeStateInteractions() {
+        console.log('Adding onclick handlers to states...');
+        const states = document.querySelectorAll('.state-path');
+        states.forEach(function(state) {
             const stateCode = state.id.replace('state-', '');
-            console.log('State clicked (delegated):', stateCode);
-            
-            // Check if this state is already selected
-            const isAlreadySelected = state.classList.contains('selected');
-            
-            // Remove previous selection from all states
-            document.querySelectorAll('.state-path').forEach(s => {
-                s.classList.remove('selected');
-            });
-            
-            if (isAlreadySelected) {
-                // If clicking the same state, deselect it
-                selectedState = null;
-                updateInfoCard(null);
-            } else {
-                // If clicking a different state, select it
-                state.classList.add('selected');
-                selectedState = stateCode;
-                updateInfoCard(stateCode);
-            }
-            
-            hideTooltip();
+            // Add inline handlers dynamically
+            state.setAttribute('onclick', 'window.handleStateClick("' + stateCode + '")');
+            state.setAttribute('onmouseover', 'window.handleStateHover(event, "' + stateCode + '")');
+            state.setAttribute('onmouseout', 'window.handleStateLeave()');
+            state.style.cursor = 'pointer';
+            state.style.pointerEvents = 'all';
         });
-        
-        // Delegated hover handlers
-        svgContainer.addEventListener('mouseover', function(e) {
-            const state = e.target.closest('.state-path');
-            if (!state || window.innerWidth <= 768) return;
-            
-            const stateCode = state.id.replace('state-', '');
-            showTooltip(e, stateCode);
-        });
-        
-        svgContainer.addEventListener('mouseout', function(e) {
-            const state = e.target.closest('.state-path');
-            if (!state) return;
-            hideTooltip();
-        });
+        console.log('Added onclick to ' + states.length + ' states');
     }
     
     // Initialize everything when DOM is ready

@@ -134,6 +134,8 @@
             stroke-width: 0.5;
             cursor: pointer;
             transition: all 0.2s ease;
+            pointer-events: all !important;
+            z-index: 10;
         }
         
         .state-path:hover {
@@ -497,10 +499,6 @@
     <!-- End of Main Container -->
     
     <script>
-    // WordPress-compatible JavaScript wrapper
-    (function() {
-        'use strict';
-        
     // Insurance Metrics Data for All States (without DC)
     const DATA = {
         // GL Premium as % of Revenue (with ranges)
@@ -821,30 +819,23 @@
         });
     }
     
-    // Initialize toggle button listeners
+    // Initialize toggle button listeners using event delegation
     function initializeToggles() {
         console.log('Initializing toggle buttons...');
         
-        // Main metric buttons
-        const metricButtons = document.querySelectorAll('.metric-btn');
-        console.log('Found ' + metricButtons.length + ' metric buttons');
-        
-        metricButtons.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                console.log('Metric button clicked:', this.dataset.metric);
-                handleMetricToggle(this.dataset.metric);
-            });
-        });
-        
-        // WC sub-buttons
-        const wcButtons = document.querySelectorAll('.wc-sub-btn');
-        console.log('Found ' + wcButtons.length + ' WC sub-buttons');
-        
-        wcButtons.forEach(btn => {
-            btn.addEventListener('click', function(e) {
-                console.log('WC button clicked:', this.dataset.wcCode);
-                handleWCCodeToggle(this.dataset.wcCode);
-            });
+        // Use event delegation for better WordPress compatibility
+        document.addEventListener('click', function(e) {
+            // Check if clicked element is a metric button
+            if (e.target.classList.contains('metric-btn')) {
+                console.log('Metric button clicked:', e.target.dataset.metric);
+                handleMetricToggle(e.target.dataset.metric);
+            }
+            
+            // Check if clicked element is a WC sub-button
+            if (e.target.classList.contains('wc-sub-btn')) {
+                console.log('WC button clicked:', e.target.dataset.wcCode);
+                handleWCCodeToggle(e.target.dataset.wcCode);
+            }
         });
     }
     
@@ -906,53 +897,61 @@
         }
     }
     
-    // Initialize state interactions
+    // Initialize state interactions using event delegation
     function initializeStateInteractions() {
         const statePaths = document.querySelectorAll('.state-path');
         console.log('Initializing ' + statePaths.length + ' state paths');
         
-        // Add event listeners to all state paths
-        statePaths.forEach(state => {
-            // Extract state code from ID
+        // Use event delegation on the SVG container for better WordPress compatibility
+        const svgContainer = document.querySelector('#us-map-svg svg');
+        if (!svgContainer) {
+            console.error('SVG container not found');
+            return;
+        }
+        
+        // Delegated click handler
+        svgContainer.addEventListener('click', function(e) {
+            const state = e.target.closest('.state-path');
+            if (!state) return;
+            
             const stateCode = state.id.replace('state-', '');
+            console.log('State clicked (delegated):', stateCode);
             
-            // Hover events (desktop only)
-            state.addEventListener('mouseenter', function(e) {
-                if (window.innerWidth > 768) {
-                    showTooltip(e, stateCode);
-                }
+            // Check if this state is already selected
+            const isAlreadySelected = state.classList.contains('selected');
+            
+            // Remove previous selection from all states
+            document.querySelectorAll('.state-path').forEach(s => {
+                s.classList.remove('selected');
             });
             
-            state.addEventListener('mouseleave', function() {
-                hideTooltip();
-            });
+            if (isAlreadySelected) {
+                // If clicking the same state, deselect it
+                selectedState = null;
+                updateInfoCard(null);
+            } else {
+                // If clicking a different state, select it
+                state.classList.add('selected');
+                selectedState = stateCode;
+                updateInfoCard(stateCode);
+            }
             
-            // Click event
-            state.addEventListener('click', function(e) {
-                console.log('State clicked:', stateCode);
-                
-                // Check if this state is already selected
-                const isAlreadySelected = this.classList.contains('selected');
-                
-                // Remove previous selection from all states
-                document.querySelectorAll('.state-path').forEach(s => {
-                    s.classList.remove('selected');
-                });
-                
-                if (isAlreadySelected) {
-                    // If clicking the same state, deselect it
-                    selectedState = null;
-                    updateInfoCard(null);  // Reset info card to default
-                } else {
-                    // If clicking a different state, select it
-                    this.classList.add('selected');
-                    selectedState = stateCode;
-                    updateInfoCard(stateCode);
-                }
-                
-                // Hide tooltip
-                hideTooltip();
-            });
+            hideTooltip();
+        });
+        
+        // Delegated hover handlers
+        svgContainer.addEventListener('mouseover', function(e) {
+            const state = e.target.closest('.state-path');
+            if (!state || window.innerWidth <= 768) return;
+            
+            const stateCode = state.id.replace('state-', '');
+            showTooltip(e, stateCode);
+        });
+        
+        svgContainer.addEventListener('mouseout', function(e) {
+            const state = e.target.closest('.state-path');
+            if (!state) return;
+            hideTooltip();
         });
     }
     
@@ -974,36 +973,22 @@
     }
     
     // WordPress-compatible initialization
-    // Use multiple methods to ensure initialization works in WordPress
-    function startApp() {
+    // Simple initialization for WordPress
+    setTimeout(function() {
+        console.log('Starting map initialization...');
         if (document.getElementById('insurance-map-container')) {
-            console.log('Initializing insurance map...');
             initializeMap();
-        } else {
-            console.log('Container not found, retrying...');
-            setTimeout(startApp, 100);
         }
-    }
+    }, 500);
     
-    // Try multiple initialization methods for WordPress compatibility
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', startApp);
-    } else if (document.readyState === 'interactive' || document.readyState === 'complete') {
-        // For WordPress, use a small delay to ensure everything is loaded
-        setTimeout(startApp, 100);
-    }
-    
-    // Also try when window loads (backup method)
-    if (typeof window !== 'undefined') {
-        window.addEventListener('load', function() {
-            if (!window.mapInitialized) {
-                window.mapInitialized = true;
-                startApp();
-            }
-        });
-    }
-    
-    })(); // End of IIFE wrapper
+    // Also initialize on window load as backup
+    window.addEventListener('load', function() {
+        if (!window.mapInitialized) {
+            window.mapInitialized = true;
+            console.log('Window loaded, initializing map...');
+            initializeMap();
+        }
+    });
     </script>
     
 </body>

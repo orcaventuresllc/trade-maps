@@ -453,12 +453,13 @@
     <!-- End of Main Container -->
     
     <script>
-    // Debug message to confirm JavaScript is running
-    console.log('=== WORDPRESS DEBUG: JavaScript is executing ===');
-    
-    // Make everything global for WordPress compatibility
-    window.mapDebug = true;
-    
+(function () {
+    console.log('=== WORDPRESS DEBUG: Fixed map script executing ===');
+
+    // Ensure expected globals exist with defaults
+    window.currentMetric = window.currentMetric || 'glPremiumPct';
+    window.selectedState = window.selectedState || null;
+
     // Insurance Metrics Data for All States (without DC)
     window.DATA = {
         // GL Premium as % of Revenue (with ranges)
@@ -868,23 +869,226 @@
         updateInfoCard(null);
     }
     
-    // WordPress-compatible initialization
-    // Simple initialization for WordPress
-    setTimeout(function() {
-        console.log('Starting map initialization...');
-        if (document.getElementById('insurance-map-container')) {
-            initializeMap();
+    function getHeatmapColor(value, min, max, reverseScale) {
+        const span = (max - min) || 1; // avoid divide-by-zero
+        let normalized = (value - min) / span;
+        if (reverseScale) normalized = 1 - normalized;
+        const heatLevel = Math.floor(normalized * 8);
+        return 'heat-' + Math.min(7, Math.max(0, heatLevel));
+    }
+
+    window.updateMapColors = function () {
+        const metricKey  = window.currentMetric;
+        const metricData = window.DATA[metricKey];
+        const config     = window.METRIC_CONFIG[metricKey];
+        if (!metricData) return;
+
+        const values = Object.keys(metricData).map(code =>
+            metricKey === 'glPremiumPct' ? metricData[code].midpoint : metricData[code]
+        );
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+
+        Object.keys(metricData).forEach(code => {
+            const el = document.querySelector('#state-' + code);
+            if (!el) return;
+            for (let i = 0; i <= 7; i++) el.classList.remove('heat-' + i);
+            const v = metricKey === 'glPremiumPct' ? metricData[code].midpoint : metricData[code];
+            el.classList.add(getHeatmapColor(v, min, max, !!config.reverseScale));
+        });
+
+        updateLegend(config);
+    };
+
+    function updateLegend(config) {
+        const minEl = document.querySelector('.legend-min');
+        const maxEl = document.querySelector('.legend-max');
+        if (!minEl || !maxEl) return;
+        if (config && config.reverseScale) {
+            minEl.textContent = 'Better';
+            maxEl.textContent = 'Worse';
+        } else {
+            minEl.textContent = 'Low';
+            maxEl.textContent = 'High';
         }
-    }, 500);
-    
-    // Also initialize on window load as backup
-    window.addEventListener('load', function() {
-        if (!window.mapInitialized) {
-            window.mapInitialized = true;
-            console.log('Window loaded, initializing map...');
-            initializeMap();
+    }
+
+    window.updateInfoCard = function (stateCode) {
+        const name      = window.STATE_NAMES[stateCode];
+        const metricKey = window.currentMetric;
+        const dataForState = stateCode ? window.DATA[metricKey][stateCode] : null;
+        const config    = window.METRIC_CONFIG[metricKey];
+
+        const nameEl  = document.querySelector('.info-card .state-name');
+        const valueEl = document.querySelector('.info-card .metric-value');
+        const descEl  = document.querySelector('.info-card .metric-description');
+        const ctaEl   = document.querySelector('.info-card .cta-link');
+
+        if (nameEl) nameEl.textContent = name || 'Select a State';
+
+        if (valueEl) {
+            if (dataForState != null) {
+                valueEl.textContent =
+                    (metricKey === 'glPremiumPct')
+                        ? config.format(dataForState)         // object -> uses .range
+                        : config.format(Number(dataForState)); // number
+            } else {
+                valueEl.textContent = '--';
+            }
         }
-    });
+
+        if (descEl) {
+            descEl.textContent = stateCode ? config.description : 'Click on a state to view insurance metrics';
+        }
+
+        if (ctaEl) {
+            if (stateCode && name) {
+                ctaEl.href = 'https://app.contractornerd.com/';
+                ctaEl.textContent = `Get Free Quotes for ${name} →`;
+                ctaEl.style.display = 'inline-block';
+            } else {
+                ctaEl.style.display = 'none';
+            }
+        }
+    };
+
+    window.handleMetricToggle = function (metric) {
+        console.log('Button clicked:', metric);
+        document.querySelectorAll('.metric-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.querySelector(`[data-metric="${metric}"]`);
+        if (btn) btn.classList.add('active');
+
+        window.currentMetric = metric;
+        window.updateMapColors();
+        if (window.selectedState) window.updateInfoCard(window.selectedState);
+    };
+
+    function populateDropdown() {
+        const dropdown = document.getElementById('state-dropdown');
+        if (!dropdown) return;
+        const states = Object.entries(window.STATE_NAMES).sort((a,b)=>a[1].localeCompare(b[1]));
+        states.forEach(([code, name]) => {
+            const opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = name;
+            dropdown.appendChild(opt);
+        });
+    }
+
+    function initializeToggles() {
+        console.log('Initializing toggle buttons with addEventListener fallback...');
+        // Works even if WP stripped inline onclick attributes
+        document.querySelectorAll('.metric-btn').forEach(btn => {
+            btn.addEventListener('click', () => window.handleMetricToggle(btn.dataset.metric));
+        });
+    }
+
+    function initializeDropdown() {
+        const dd = document.getElementById('state-dropdown');
+        if (!dd) return;
+        dd.addEventListener('change', function () {
+            if (this.value) {
+                window.selectedState = this.value;
+                window.updateInfoCard(this.value);
+            }
+        });
+    }
+
+    window.handleStateClick = function (stateCode) {
+        console.log('State clicked (inline):', stateCode);
+        const state = document.getElementById('state-' + stateCode);
+        if (!state) return;
+        const already = state.classList.contains('selected');
+        document.querySelectorAll('.state-path').forEach(s => s.classList.remove('selected'));
+        if (already) {
+            window.selectedState = null;
+            window.updateInfoCard(null);
+        } else {
+            state.classList.add('selected');
+            window.selectedState = stateCode;
+            window.updateInfoCard(stateCode);
+        }
+        window.hideTooltip();
+    };
+
+    window.handleStateHover = function (event, stateCode) {
+        if (window.innerWidth <= 768) return;
+        window.showTooltip(event, stateCode);
+    };
+
+    window.handleStateLeave = function () {
+        window.hideTooltip();
+    };
+
+    window.showTooltip = function(event, stateCode) {
+        const tooltip = document.getElementById('map-tooltip');
+        const key     = window.currentMetric;
+        const data    = window.DATA[key][stateCode];
+        const config  = window.METRIC_CONFIG[key];
+        if (!data || !tooltip) return;
+
+        const formatted = (key === 'glPremiumPct') ? config.format(data) : config.format(Number(data));
+        tooltip.querySelector('.state-name').textContent  = window.STATE_NAMES[stateCode];
+        tooltip.querySelector('.metric-label').textContent = config.label;
+        tooltip.querySelector('.metric-value').textContent = formatted;
+
+        const rect = event.target.getBoundingClientRect();
+        const wrapRect = document.querySelector('.map-wrapper').getBoundingClientRect();
+        let left = rect.right - wrapRect.left + 10;
+        let top  = rect.top   - wrapRect.top  + (rect.height / 2) - 40;
+        const width = 220;
+        if (left + width > wrapRect.width) left = rect.left - wrapRect.left - width - 10;
+        if (top < 10) top = 10;
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top  = top  + 'px';
+        tooltip.style.display = 'block';
+    };
+
+    window.hideTooltip = function () {
+        const t = document.getElementById('map-tooltip');
+        if (t) t.style.display = 'none';
+    };
+
+    function initializeStateInteractions() {
+        console.log('Adding event listeners to states...');
+        const states = document.querySelectorAll('.state-path');
+        states.forEach(state => {
+            const code = state.id.replace('state-', '');
+            // Add event listeners as fallback when WordPress strips onclick
+            state.addEventListener('click',     ()  => window.handleStateClick(code));
+            state.addEventListener('mouseover', e   => window.handleStateHover(e, code));
+            state.addEventListener('mouseout',  ()  => window.handleStateLeave());
+            state.style.cursor = 'pointer';
+            state.style.pointerEvents = 'all';
+        });
+        console.log('Added event listeners to ' + states.length + ' states');
+    }
+
+    function initializeMap() {
+        if (window.mapInitialized) return;
+        window.mapInitialized = true;
+
+        initializeStateInteractions();
+        window.updateMapColors();
+        populateDropdown();
+        initializeToggles();
+        initializeDropdown();
+        window.updateInfoCard(null);
+
+        console.log('Map initialized successfully.');
+    }
+
+    // Initialize once - WordPress compatible
+    const root = document.getElementById('insurance-map-container');
+    if (!root) return;
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        initializeMap();
+    } else {
+        document.addEventListener('DOMContentLoaded', initializeMap);
+    }
+    window.addEventListener('load', initializeMap);
+})();
     </script>
     
 </body>

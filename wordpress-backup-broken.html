@@ -136,6 +136,71 @@
     color: #888;
 }
 
+/* Make map-wrapper positioned for tooltip */
+.map-wrapper {
+    position: relative;
+}
+
+/* CSS-only tooltip */
+.state-path[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1000;
+    white-space: nowrap;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 100%;
+    margin-bottom: 10px;
+}
+
+.state-path[data-tooltip]:hover::after {
+    opacity: 1;
+}
+
+/* Simple tooltip display */
+.state-tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1000;
+    display: none;
+}
+
+.state-tooltip.show {
+    opacity: 1;
+    display: block;
+}
+
+.state-tooltip .tooltip-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.state-tooltip .tooltip-value {
+    color: #2563eb;
+    font-weight: 500;
+}
+
 .map-subtitle {
     font-size: 16px;
     color: #666;
@@ -294,6 +359,12 @@
         <div class="map-wrapper">
             <div id="map-svg-container">
                 <!-- SVG will be copied here by JavaScript -->
+            </div>
+            
+            <!-- Simple Tooltip -->
+            <div id="simple-tooltip" class="state-tooltip">
+                <div class="tooltip-title"></div>
+                <div class="tooltip-value"></div>
             </div>
         </div>
         
@@ -506,12 +577,38 @@
                 state.classList.remove('heat-' + j);
             }
             
-            // Add new heat class
+            // Add new heat class and title for native tooltip
             if (value !== undefined) {
                 var normalized = (value - min) / (max - min);
                 var heat = Math.floor(normalized * 8);
                 heat = Math.min(7, Math.max(0, heat));
                 state.classList.add('heat-' + heat);
+                
+                // Add data-tooltip attribute for CSS tooltip
+                var stateName = stateNames[stateCode] || stateCode;
+                var formattedValue = '--';
+                var metricLabel = '';
+                
+                if (currentMetric === 'glPremium') {
+                    formattedValue = glPremiumRanges[stateCode] || value + '%';
+                    metricLabel = 'GL Premium';
+                } else if (currentMetric === 'glSavings') {
+                    formattedValue = value + '%';
+                    metricLabel = 'GL Savings';
+                } else if (currentMetric === 'glCompetitiveness') {
+                    formattedValue = value + 'th percentile';
+                    metricLabel = 'Competitiveness';
+                } else if (currentMetric === 'wcRate') {
+                    formattedValue = '$' + value.toFixed(2);
+                    metricLabel = 'WC Rate';
+                }
+                
+                // Set data-tooltip for display
+                state.setAttribute('data-tooltip', stateName + ' | ' + metricLabel + ': ' + formattedValue);
+            } else {
+                // Set data-tooltip for states with no data
+                var stateName = stateNames[stateCode] || stateCode;
+                state.setAttribute('data-tooltip', stateName + ' | No data');
             }
         }
     }
@@ -810,6 +907,75 @@
             
             // Add click listener to map container (event delegation)
             container.addEventListener('click', handleStateClick);
+            
+            // Add safe hover listeners for tooltip
+            try {
+                container.addEventListener('mouseover', function(event) {
+                    try {
+                        if (!event || !event.target) return;
+                        var target = event.target;
+                        
+                        if (target.classList && target.classList.contains('state-path')) {
+                            var tooltipData = target.getAttribute('data-tooltip');
+                            if (!tooltipData) return;
+                            
+                            var tooltip = document.getElementById('simple-tooltip');
+                            if (!tooltip) return;
+                            
+                            // Split on pipe separator
+                            var parts = tooltipData.split(' | ');
+                            
+                            var titleEl = tooltip.querySelector('.tooltip-title');
+                            var valueEl = tooltip.querySelector('.tooltip-value');
+                            
+                            if (titleEl) {
+                                titleEl.textContent = parts[0] || '';
+                            }
+                            if (valueEl) {
+                                valueEl.textContent = parts[1] || '';
+                            }
+                            
+                            // Simple positioning
+                            var rect = target.getBoundingClientRect();
+                            var mapRect = container.getBoundingClientRect();
+                            
+                            var left = (rect.left + rect.right) / 2 - mapRect.left;
+                            var top = rect.top - mapRect.top - 70;
+                            
+                            // Keep on screen
+                            if (top < 0) {
+                                top = rect.bottom - mapRect.top + 10;
+                            }
+                            
+                            tooltip.style.left = left + 'px';
+                            tooltip.style.top = top + 'px';
+                            tooltip.style.transform = 'translateX(-50%)';
+                            tooltip.style.display = 'block';
+                            tooltip.style.opacity = '1';
+                        }
+                    } catch (e) {
+                        // Silently fail - don't break the map
+                    }
+                });
+                
+                container.addEventListener('mouseout', function(event) {
+                    try {
+                        if (!event || !event.target) return;
+                        
+                        if (event.target.classList && event.target.classList.contains('state-path')) {
+                            var tooltip = document.getElementById('simple-tooltip');
+                            if (tooltip) {
+                                tooltip.style.opacity = '0';
+                                tooltip.style.display = 'none';
+                            }
+                        }
+                    } catch (e) {
+                        // Silently fail
+                    }
+                });
+            } catch (e) {
+                // If event listeners fail to attach, map still works
+            }
             
             // Add click listener to buttons container (event delegation)
             var buttonContainer = document.querySelector('.metric-toggles');

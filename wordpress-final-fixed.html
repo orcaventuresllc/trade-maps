@@ -215,10 +215,13 @@
     border-radius: 8px;
     font-weight: 500;
     transition: background 0.3s ease;
+    text-align: center;
+    line-height: 1.4;
 }
 
 .cta-link:hover {
     background: #1d4ed8;
+    color: white;
 }
 
 /* Hover tooltip */
@@ -685,7 +688,7 @@
             // Update CTA button
             if (ctaEl) {
                 ctaEl.href = 'https://app.contractornerd.com/';
-                ctaEl.textContent = 'Get Free Quotes for ' + stateName + ' →';
+                ctaEl.innerHTML = 'Get Free Quotes for<br>' + stateName + ' →';
                 ctaEl.style.display = 'inline-block';
             }
         } else {

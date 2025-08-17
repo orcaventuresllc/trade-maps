@@ -524,7 +524,6 @@
     }
     
     // Show tooltip on hover
-    /* TEMPORARILY DISABLED FOR DEBUGGING
     function showTooltip(event, stateCode) {
         var tooltip = document.getElementById('map-tooltip');
         if (!tooltip) return;
@@ -572,16 +571,22 @@
         }
         tooltip.querySelector('.metric-value').textContent = formattedValue;
         
-        // Position tooltip
-        var rect = event.target.getBoundingClientRect();
+        // Position tooltip near mouse cursor
         var containerRect = document.querySelector('.map-wrapper').getBoundingClientRect();
         
-        var left = rect.right - containerRect.left + 10;
-        var top = rect.top - containerRect.top + (rect.height / 2) - 30;
+        // Use mouse coordinates for more natural positioning
+        var left = event.clientX - containerRect.left + 15;
+        var top = event.clientY - containerRect.top - 40;
         
         // Adjust if would go off screen
-        if (left + 220 > containerRect.width) {
-            left = rect.left - containerRect.left - 220 - 10;
+        var tooltipWidth = 220;
+        if (left + tooltipWidth > containerRect.width) {
+            left = event.clientX - containerRect.left - tooltipWidth - 15;
+        }
+        
+        // Keep tooltip within vertical bounds
+        if (top < 10) {
+            top = 10;
         }
         
         tooltip.style.left = left + 'px';
@@ -607,7 +612,6 @@
         var stateCode = target.id.replace('state-', '');
         showTooltip(event, stateCode);
     }
-    END OF DISABLED CODE */
     
     // Handle state click
     function handleStateClick(event) {
@@ -786,14 +790,12 @@
             container.addEventListener('click', handleStateClick);
             
             // Add hover listeners (event delegation)
-            /* TEMPORARILY DISABLED
             container.addEventListener('mouseover', handleStateHover);
             container.addEventListener('mouseout', function(event) {
                 if (event.target.classList && event.target.classList.contains('state-path')) {
                     hideTooltip();
                 }
             });
-            */
             
             // Add click listener to buttons container (event delegation)
             var buttonContainer = document.querySelector('.metric-toggles');

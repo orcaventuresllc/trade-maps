@@ -57,12 +57,19 @@
     border-color: #2563eb;
 }
 
+.map-content-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
 .map-wrapper {
     background: #f9fafb;
     border-radius: 12px;
     padding: 20px;
     min-height: 400px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    flex: 1;
 }
 
 /* State path styles */
@@ -159,10 +166,13 @@
 }
 
 .info-card {
-    margin-top: 20px;
-    padding: 20px;
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 320px;
+    flex-shrink: 0;
+    align-self: flex-start;
     text-align: center;
 }
 
@@ -176,7 +186,14 @@
 .metric-value {
     font-size: 32px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #2563eb;
+    margin: 10px 0;
+}
+
+.metric-description {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
 }
 
 /* Hide the source SVG */
@@ -213,15 +230,18 @@
         <span class="legend-max">High</span>
     </div>
     
-    <div class="map-wrapper">
-        <div id="map-svg-container">
-            <!-- SVG will be copied here by JavaScript -->
+    <div class="map-content-container">
+        <div class="map-wrapper">
+            <div id="map-svg-container">
+                <!-- SVG will be copied here by JavaScript -->
+            </div>
         </div>
-    </div>
-    
-    <div class="info-card">
-        <div class="state-name">Select a State</div>
-        <div class="metric-value">--</div>
+        
+        <div class="info-card">
+            <div class="state-name">Select a State</div>
+            <div class="metric-value">--</div>
+            <div class="metric-description">Click on a state to view insurance metrics</div>
+        </div>
     </div>
 </div>
 
@@ -454,6 +474,7 @@
     function updateInfo(stateCode) {
         var nameEl = document.querySelector('.state-name');
         var valueEl = document.querySelector('.metric-value');
+        var descEl = document.querySelector('.metric-description');
         
         if (!nameEl || !valueEl) return;
         
@@ -481,9 +502,25 @@
             } else {
                 valueEl.textContent = '--';
             }
+            
+            // Update description
+            if (descEl) {
+                if (currentMetric === 'glPremium') {
+                    descEl.textContent = 'General Liability premium as % of revenue';
+                } else if (currentMetric === 'glSavings') {
+                    descEl.textContent = 'Potential savings on General Liability';
+                } else if (currentMetric === 'glCompetitiveness') {
+                    descEl.textContent = 'Number of competitive GL carriers';
+                } else if (currentMetric === 'wcRate') {
+                    descEl.textContent = 'Workers Comp rate per $100 of payroll';
+                }
+            }
         } else {
             nameEl.textContent = 'Select a State';
             valueEl.textContent = '--';
+            if (descEl) {
+                descEl.textContent = 'Click on a state to view insurance metrics';
+            }
         }
     }
     

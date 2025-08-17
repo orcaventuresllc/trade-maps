@@ -612,7 +612,6 @@
         }
         
         var stateCode = target.id.replace('state-', '');
-        console.log('State clicked:', stateCode);
         
         // Remove previous selection
         var allStates = document.querySelectorAll('.state-path');
@@ -705,7 +704,6 @@
         }
         
         var metric = target.getAttribute('data-metric');
-        console.log('Metric clicked:', metric);
         
         // Update active button
         var buttons = document.querySelectorAll('.metric-btn');
@@ -741,7 +739,6 @@
         }
         
         var code = target.getAttribute('data-wc-code');
-        console.log('WC code clicked:', code);
         
         // Update active button
         var buttons = document.querySelectorAll('.wc-sub-btn');

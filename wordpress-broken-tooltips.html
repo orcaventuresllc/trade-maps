@@ -297,13 +297,11 @@
             </div>
             
             <!-- Info Box for Hover (hidden by default) -->
-            <!-- TOOLTIP DISABLED TO FIX MAP
             <div id="map-tooltip" class="info-box-hover" style="display: none;">
                 <div class="state-name"></div>
                 <div class="metric-label"></div>
                 <div class="metric-value"></div>
             </div>
-            -->
         </div>
         
         <div class="info-card">
@@ -515,38 +513,16 @@
                 state.classList.remove('heat-' + j);
             }
             
-            // Add new heat class and title for native tooltip
+            // Add new heat class
             if (value !== undefined) {
                 var normalized = (value - min) / (max - min);
                 var heat = Math.floor(normalized * 8);
                 heat = Math.min(7, Math.max(0, heat));
                 state.classList.add('heat-' + heat);
-                
-                // Add title attribute for native browser tooltip
-                var stateName = stateNames[stateCode] || stateCode;
-                var formattedValue = '--';
-                
-                if (currentMetric === 'glPremium') {
-                    formattedValue = glPremiumRanges[stateCode] || value + '%';
-                } else if (currentMetric === 'glSavings') {
-                    formattedValue = value + '%';
-                } else if (currentMetric === 'glCompetitiveness') {
-                    formattedValue = value + 'th percentile';
-                } else if (currentMetric === 'wcRate') {
-                    formattedValue = '$' + value.toFixed(2);
-                }
-                
-                state.setAttribute('title', stateName + ': ' + formattedValue);
-            } else {
-                // Set title for states with no data
-                var stateName = stateNames[stateCode] || stateCode;
-                state.setAttribute('title', stateName + ': No data');
             }
         }
     }
     
-    // TOOLTIP FUNCTIONS DISABLED TO FIX MAP
-    /*
     // Show tooltip on hover with error handling
     function showTooltip(event, stateCode) {
         try {
@@ -662,7 +638,6 @@
             // Silently fail
         }
     }
-    */
     
     // Handle state click
     function handleStateClick(event) {
@@ -841,15 +816,12 @@
             container.addEventListener('click', handleStateClick);
             
             // Add hover listeners (event delegation)
-            // TOOLTIP LISTENERS DISABLED TO FIX MAP
-            /*
             container.addEventListener('mouseover', handleStateHover);
             container.addEventListener('mouseout', function(event) {
                 if (event.target && event.target.classList && event.target.classList.contains('state-path')) {
                     hideTooltip();
                 }
             });
-            */
             
             // Add click listener to buttons container (event delegation)
             var buttonContainer = document.querySelector('.metric-toggles');

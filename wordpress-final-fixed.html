@@ -219,6 +219,38 @@
     background: #1d4ed8;
 }
 
+/* Hover tooltip */
+.info-box-hover {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.info-box-hover .state-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.info-box-hover .metric-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.info-box-hover .metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2563eb;
+}
+
 /* Hide the source SVG */
 #hidden-svg-source {
     display: none !important;
@@ -257,6 +289,13 @@
         <div class="map-wrapper">
             <div id="map-svg-container">
                 <!-- SVG will be copied here by JavaScript -->
+            </div>
+            
+            <!-- Info Box for Hover (hidden by default) -->
+            <div id="map-tooltip" class="info-box-hover" style="display: none;">
+                <div class="state-name"></div>
+                <div class="metric-label"></div>
+                <div class="metric-value"></div>
             </div>
         </div>
         
@@ -334,6 +373,20 @@
 // Pure ES5 JavaScript - WordPress Safe
 (function() {
     'use strict';
+    
+    // GL Premium ranges for display
+    var glPremiumRanges = {
+        AL: "0.5% - 1.4%", AK: "0.4% - 0.9%", AZ: "0.5% - 1.5%", AR: "0.4% - 1.3%", CA: "0.5% - 1.5%",
+        CO: "0.3% - 0.8%", CT: "0.4% - 1.3%", DE: "0.5% - 1.4%", FL: "0.4% - 1.3%", GA: "0.6% - 1.9%",
+        HI: "1.3% - 3.9%", ID: "0.5% - 1.3%", IL: "0.4% - 1.3%", IN: "0.3% - 0.9%", IA: "0.4% - 1.3%",
+        KS: "0.4% - 1.2%", KY: "0.3% - 1.0%", LA: "0.6% - 1.8%", ME: "0.4% - 1.1%", MD: "0.5% - 1.6%",
+        MA: "0.4% - 1.2%", MI: "0.4% - 1.2%", MN: "0.7% - 1.9%", MS: "0.6% - 1.8%", MO: "1.4% - 2.4%",
+        MT: "0.4% - 1.3%", NE: "0.8% - 2.4%", NV: "0.3% - 0.9%", NH: "0.5% - 1.3%", NJ: "0.3% - 0.9%",
+        NM: "0.4% - 1.1%", NY: "0.4% - 1.1%", NC: "1.3% - 1.9%", ND: "0.4% - 1.1%", OH: "0.6% - 1.7%",
+        OK: "0.5% - 2.1%", OR: "0.5% - 1.7%", PA: "0.7% - 2.1%", RI: "0.6% - 1.9%", SC: "0.4% - 1.4%",
+        SD: "0.4% - 1.3%", TN: "0.6% - 1.1%", TX: "0.5% - 1.1%", UT: "0.5% - 1.5%", VT: "0.4% - 1.0%",
+        VA: "0.3% - 0.7%", WA: "0.4% - 1.1%", WV: "0.5% - 1.5%", WI: "0.4% - 1.2%", WY: "0.4% - 1.2%"
+    };
     
     // Complete state data for all 50 states
     var stateData = {
@@ -465,6 +518,90 @@
         }
     }
     
+    // Show tooltip on hover
+    function showTooltip(event, stateCode) {
+        var tooltip = document.getElementById('map-tooltip');
+        if (!tooltip) return;
+        
+        var stateName = stateNames[stateCode];
+        if (!stateName) return;
+        
+        // Get metric data
+        var metricKey = currentMetric;
+        if (currentMetric === 'wcRate') {
+            metricKey = 'wcRate' + currentWCCode;
+        }
+        
+        var value = stateData[metricKey][stateCode];
+        
+        // Update tooltip content
+        tooltip.querySelector('.state-name').textContent = stateName;
+        
+        // Set metric label
+        var metricLabel = '';
+        if (currentMetric === 'glPremium') {
+            metricLabel = 'GL Premium % of Revenue';
+        } else if (currentMetric === 'glSavings') {
+            metricLabel = 'GL Savings %';
+        } else if (currentMetric === 'glCompetitiveness') {
+            metricLabel = 'GL Carrier Competitiveness';
+        } else if (currentMetric === 'wcRate') {
+            metricLabel = 'WC Rate per $100';
+        }
+        tooltip.querySelector('.metric-label').textContent = metricLabel;
+        
+        // Format value
+        var formattedValue = '--';
+        if (value !== undefined) {
+            if (currentMetric === 'glPremium') {
+                // Show range for GL Premium
+                formattedValue = glPremiumRanges[stateCode] || value + '%';
+            } else if (currentMetric === 'glSavings') {
+                formattedValue = value + '%';
+            } else if (currentMetric === 'glCompetitiveness') {
+                formattedValue = value + 'th percentile';
+            } else if (currentMetric === 'wcRate') {
+                formattedValue = '$' + value.toFixed(2);
+            }
+        }
+        tooltip.querySelector('.metric-value').textContent = formattedValue;
+        
+        // Position tooltip
+        var rect = event.target.getBoundingClientRect();
+        var containerRect = document.querySelector('.map-wrapper').getBoundingClientRect();
+        
+        var left = rect.right - containerRect.left + 10;
+        var top = rect.top - containerRect.top + (rect.height / 2) - 30;
+        
+        // Adjust if would go off screen
+        if (left + 220 > containerRect.width) {
+            left = rect.left - containerRect.left - 220 - 10;
+        }
+        
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+        tooltip.style.display = 'block';
+    }
+    
+    // Hide tooltip
+    function hideTooltip() {
+        var tooltip = document.getElementById('map-tooltip');
+        if (tooltip) {
+            tooltip.style.display = 'none';
+        }
+    }
+    
+    // Handle state hover
+    function handleStateHover(event) {
+        var target = event.target;
+        if (!target.classList || !target.classList.contains('state-path')) {
+            return;
+        }
+        
+        var stateCode = target.id.replace('state-', '');
+        showTooltip(event, stateCode);
+    }
+    
     // Handle state click
     function handleStateClick(event) {
         var target = event.target;
@@ -516,7 +653,7 @@
             var value = stateData[metricKey][stateCode];
             if (value !== undefined) {
                 if (currentMetric === 'glPremium') {
-                    valueEl.textContent = value + '%';
+                    valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
                 } else if (currentMetric === 'glSavings') {
                     valueEl.textContent = value + '%';
                 } else if (currentMetric === 'glCompetitiveness') {
@@ -644,6 +781,14 @@
             
             // Add click listener to map container (event delegation)
             container.addEventListener('click', handleStateClick);
+            
+            // Add hover listeners (event delegation)
+            container.addEventListener('mouseover', handleStateHover);
+            container.addEventListener('mouseout', function(event) {
+                if (event.target.classList && event.target.classList.contains('state-path')) {
+                    hideTooltip();
+                }
+            });
             
             // Add click listener to buttons container (event delegation)
             var buttonContainer = document.querySelector('.metric-toggles');

@@ -519,6 +519,7 @@
     }
     
     // Show tooltip on hover
+    /* TEMPORARILY DISABLED FOR DEBUGGING
     function showTooltip(event, stateCode) {
         var tooltip = document.getElementById('map-tooltip');
         if (!tooltip) return;
@@ -601,6 +602,7 @@
         var stateCode = target.id.replace('state-', '');
         showTooltip(event, stateCode);
     }
+    END OF DISABLED CODE */
     
     // Handle state click
     function handleStateClick(event) {
@@ -652,7 +654,8 @@
             var value = stateData[metricKey][stateCode];
             if (value !== undefined) {
                 if (currentMetric === 'glPremium') {
-                    valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
+                    // TEMPORARILY DISABLED: valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
+                    valueEl.textContent = value + '%';
                 } else if (currentMetric === 'glSavings') {
                     valueEl.textContent = value + '%';
                 } else if (currentMetric === 'glCompetitiveness') {
@@ -763,12 +766,10 @@
             var container = document.getElementById('map-svg-container');
             
             if (!hiddenSvg) {
-                console.error('Hidden SVG not found!');
                 return;
             }
             
             if (!container) {
-                console.error('Map container not found!');
                 return;
             }
             
@@ -780,12 +781,14 @@
             container.addEventListener('click', handleStateClick);
             
             // Add hover listeners (event delegation)
+            /* TEMPORARILY DISABLED
             container.addEventListener('mouseover', handleStateHover);
             container.addEventListener('mouseout', function(event) {
                 if (event.target.classList && event.target.classList.contains('state-path')) {
                     hideTooltip();
                 }
             });
+            */
             
             // Add click listener to buttons container (event delegation)
             var buttonContainer = document.querySelector('.metric-toggles');
@@ -803,7 +806,7 @@
             updateColors();
             
         } catch (error) {
-            console.error('Initialization error:', error);
+            // Silent fail
         }
     }
     

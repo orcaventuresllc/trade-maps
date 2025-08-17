@@ -1,0 +1,124 @@
+<script>
+console.log('===== WORDPRESS SCRIPT TEST =====');
+console.log('If you see this message, WordPress IS running scripts!');
+console.log('Timestamp: ' + new Date().toISOString());
+alert('WordPress Script Test: Scripts ARE running! Check console for details.');
+</script>
+
+<style>
+    #diagnostic-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 30px;
+        background: #f0f8ff;
+        border: 2px solid #0066cc;
+        border-radius: 10px;
+        font-family: Arial, sans-serif;
+    }
+    
+    #diagnostic-container h2 {
+        color: #0066cc;
+        margin-bottom: 20px;
+    }
+    
+    .test-btn {
+        padding: 15px 30px;
+        background: #0066cc;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+        margin: 10px;
+    }
+    
+    .test-btn:hover {
+        background: #0052a3;
+    }
+    
+    #test-output {
+        margin-top: 20px;
+        padding: 20px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        min-height: 100px;
+    }
+    
+    .success {
+        color: green;
+        font-weight: bold;
+    }
+    
+    .error {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+<div id="diagnostic-container">
+    <h2>WordPress JavaScript Diagnostic Test</h2>
+    
+    <p>This page tests if WordPress is running JavaScript in your Custom HTML blocks.</p>
+    
+    <button class="test-btn" onclick="testInlineHandler()">
+        Test 1: Inline onclick Handler
+    </button>
+    
+    <button class="test-btn" id="test-btn-2">
+        Test 2: addEventListener (Click Me)
+    </button>
+    
+    <button class="test-btn" onclick="window.testGlobalFunction()">
+        Test 3: Global Function
+    </button>
+    
+    <div id="test-output">
+        <p><strong>Test Results:</strong></p>
+        <p id="script-status">Checking if scripts run...</p>
+        <p id="dom-status">Checking DOM access...</p>
+        <p id="event-status">Click buttons to test event handlers...</p>
+    </div>
+</div>
+
+<script>
+// Test 1: Script execution
+document.getElementById('script-status').innerHTML = '<span class="success">✓ Scripts ARE running!</span>';
+
+// Test 2: DOM access
+var container = document.getElementById('diagnostic-container');
+if (container) {
+    document.getElementById('dom-status').innerHTML = '<span class="success">✓ DOM access works!</span>';
+} else {
+    document.getElementById('dom-status').innerHTML = '<span class="error">✗ Cannot access DOM</span>';
+}
+
+// Test 3: Inline handler function
+function testInlineHandler() {
+    document.getElementById('event-status').innerHTML = '<span class="success">✓ Inline onclick works!</span>';
+    console.log('Inline onclick handler executed');
+}
+
+// Test 4: Global function
+window.testGlobalFunction = function() {
+    document.getElementById('event-status').innerHTML = '<span class="success">✓ Global function works!</span>';
+    console.log('Global window function executed');
+};
+
+// Test 5: addEventListener
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOMContentLoaded fired');
+    
+    var btn2 = document.getElementById('test-btn-2');
+    if (btn2) {
+        btn2.addEventListener('click', function() {
+            document.getElementById('event-status').innerHTML = '<span class="success">✓ addEventListener works!</span>';
+            console.log('addEventListener handler executed');
+        });
+    }
+});
+
+// Test 6: Direct execution
+console.log('Direct script execution at: ' + new Date().toISOString());
+console.log('===== END WORDPRESS SCRIPT TEST =====');
+</script>

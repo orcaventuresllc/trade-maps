@@ -1,521 +1,9 @@
-<style>
-    /* Container Styles */
-    #insurance-map-container {
-        max-width: 1160px;
-        margin: 0 auto;
-        padding: 20px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-        color: #333;
-    }
-    
-    /* Header Styles */
-    .map-header {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-    
-    .map-header h2 {
-        font-size: 28px;
-        font-weight: 600;
-        margin-bottom: 10px;
-        color: #1a1a1a;
-    }
-    
-    .map-subtitle {
-        font-size: 16px;
-        color: #666;
-        margin: 0;
-    }
-    
-    /* Toggle Button Styles */
-    .metric-toggles {
-        display: flex;
-        gap: 10px;
-        justify-content: center;
-        margin-bottom: 30px;
-        flex-wrap: wrap;
-    }
-    
-    .metric-btn {
-        padding: 10px 20px;
-        border: 2px solid #ddd;
-        background: white;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        color: #555;
-    }
-    
-    .metric-btn:hover {
-        background: #f5f5f5;
-        border-color: #999;
-    }
-    
-    .metric-btn.active {
-        background: #2563eb;
-        color: white;
-        border-color: #2563eb;
-    }
-    
-    /* WC Sub-buttons */
-    .wc-sub-buttons {
-        display: none;
-        gap: 10px;
-        justify-content: center;
-        margin-top: -20px;
-        margin-bottom: 20px;
-    }
-    
-    .wc-sub-buttons.show {
-        display: flex;
-    }
-    
-    .wc-sub-btn {
-        padding: 8px 16px;
-        border: 2px solid #ddd;
-        background: white;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        color: #555;
-    }
-    
-    .wc-sub-btn:hover {
-        background: #f5f5f5;
-        border-color: #999;
-    }
-    
-    .wc-sub-btn.active {
-        background: #10b981;
-        color: white;
-        border-color: #10b981;
-    }
-    
-    /* Main content layout */
-    .map-content-container {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-    
-    /* Map Wrapper */
-    .map-wrapper {
-        position: relative;
-        background: #f9fafb;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        flex: 1;
-    }
-    
-    #us-map-svg {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
-    
-    #us-map-svg svg {
-        width: 100%;
-        height: auto;
-        display: block;
-    }
-    
-    /* State Styles */
-    .state-path {
-        stroke: #fff;
-        stroke-width: 0.5;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        pointer-events: all !important;
-        z-index: 10;
-    }
-    
-    .state-path:hover {
-        stroke: #333;
-        stroke-width: 1.5;
-        filter: brightness(0.9);
-    }
-    
-    .state-path.selected {
-        stroke: #f73333;
-        stroke-width: 2;
-        fill: #ffcccc !important;
-    }
-    
-    /* Info Box Styles (replaces tooltip) */
-    .info-box-hover {
-        position: absolute;
-        background: white;
-        padding: 16px 20px;
-        border-radius: 8px;
-        min-width: 200px;
-        pointer-events: none;
-        z-index: 1000;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        border: 1px solid #e0e0e0;
-    }
-    
-    .info-box-hover .state-name {
-        font-size: 18px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin: 0 0 8px 0;
-    }
-    
-    .info-box-hover .metric-label {
-        font-size: 12px;
-        color: #666;
-        margin: 0 0 4px 0;
-    }
-    
-    .info-box-hover .metric-value {
-        font-size: 24px;
-        font-weight: 700;
-        color: #2563eb;
-        margin: 0;
-    }
-    
-    /* Mobile Selector (hidden by default) */
-    .mobile-selector {
-        display: none;
-        margin-bottom: 30px;
-        text-align: center;
-    }
-    
-    .mobile-selector label {
-        display: block;
-        margin-bottom: 10px;
-        font-weight: 500;
-        color: #555;
-    }
-    
-    #state-dropdown {
-        width: 100%;
-        max-width: 300px;
-        padding: 10px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        background: white;
-        cursor: pointer;
-    }
-    
-    /* Info Card */
-    .info-card {
-        background: white;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        width: 280px;
-        flex-shrink: 0;
-        align-self: flex-start;
-    }
-    
-    .info-card-content {
-        text-align: center;
-    }
-    
-    .state-name {
-        font-size: 20px;
-        font-weight: 600;
-        margin: 0 0 10px 0;
-        color: #1a1a1a;
-    }
-    
-    .metric-value {
-        font-size: 28px;
-        font-weight: 700;
-        color: #2563eb;
-        margin: 0 0 15px 0;
-    }
-    
-    .metric-description {
-        font-size: 14px;
-        color: #666;
-        line-height: 1.4;
-        margin: 0 0 20px 0;
-    }
-    
-    .cta-link {
-        display: inline-block;
-        background: #2563eb;
-        color: white;
-        padding: 10px 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
-        transition: background 0.2s ease;
-    }
-    
-    .cta-link:hover {
-        background: #1d4ed8;
-        text-decoration: none;
-        color: white;
-    }
-    
-    /* Heatmap Colors */
-    .heat-0 { fill: #F7F7F7; }
-    .heat-1 { fill: #FDF4C4; }
-    .heat-2 { fill: #FEE391; }
-    .heat-3 { fill: #FEC44F; }
-    .heat-4 { fill: #FE9929; }
-    .heat-5 { fill: #EC7014; }
-    .heat-6 { fill: #CC4C02; }
-    .heat-7 { fill: #993404; }
-    
-    /* Legend */
-    .legend {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 15px;
-        gap: 8px;
-        font-size: 12px;
-        color: #666;
-    }
-    
-    .legend-scale {
-        display: flex;
-        border-radius: 4px;
-        overflow: hidden;
-        border: 1px solid #ddd;
-    }
-    
-    .legend-color {
-        width: 20px;
-        height: 16px;
-    }
-    
-    .legend-color.heat-0 { background: #F7F7F7; }
-    .legend-color.heat-1 { background: #FDF4C4; }
-    .legend-color.heat-2 { background: #FEE391; }
-    .legend-color.heat-3 { background: #FEC44F; }
-    .legend-color.heat-4 { background: #FE9929; }
-    .legend-color.heat-5 { background: #EC7014; }
-    .legend-color.heat-6 { background: #CC4C02; }
-    .legend-color.heat-7 { background: #993404; }
-    
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .map-content-container {
-            flex-direction: column;
-        }
-        
-        .info-card {
-            width: 100%;
-            order: -1;
-        }
-        
-        .mobile-selector {
-            display: block;
-        }
-        
-        .state-path:hover {
-            stroke: #fff;
-            stroke-width: 0.5;
-            filter: none;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        #insurance-map-container {
-            padding: 15px;
-        }
-        
-        .map-header h2 {
-            font-size: 22px;
-        }
-        
-        .metric-toggles {
-            gap: 8px;
-        }
-        
-        .metric-btn {
-            padding: 8px 12px;
-            font-size: 12px;
-        }
-    }
-    
-    /* Tooltip/Info Box Styles */
-    #map-tooltip {
-        position: absolute;
-        background: white;
-        padding: 12px 16px;
-        border-radius: 6px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        border: 1px solid #e0e0e0;
-        pointer-events: none;
-        z-index: 1000;
-        display: none;
-        min-width: 180px;
-    }
-    
-    #map-tooltip .state-name {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1a1a1a;
-        margin: 0 0 6px 0;
-    }
-    
-    #map-tooltip .metric-label {
-        font-size: 11px;
-        color: #666;
-        margin: 0 0 3px 0;
-    }
-    
-    #map-tooltip .metric-value {
-        font-size: 18px;
-        font-weight: 700;
-        color: #2563eb;
-        margin: 0;
-    }
-</style>
+console.log('Insurance map script starting...');
 
-<div id="insurance-map-container">
-    <div class="map-header">
-        <h2>Carpenter Insurance Cost Metrics by State</h2>
-        <p class="map-subtitle">Explore insurance costs and savings opportunities across the United States</p>
-    </div>
-    
-    <div class="metric-toggles">
-        <button class="metric-btn active" data-metric="glPremiumPct">
-            GL Premium % of Revenue
-        </button>
-        <button class="metric-btn" data-metric="glSavingsPct">
-            GL Savings %
-        </button>
-        <button class="metric-btn" data-metric="glCompetitiveness">
-            GL Carrier Competitiveness
-        </button>
-        <button class="metric-btn" data-metric="wcRate">
-            WC Rate per $100
-        </button>
-    </div>
-    
-    <!-- WC Sub-buttons -->
-    <div class="wc-sub-buttons" id="wc-sub-buttons">
-        <button class="wc-sub-btn active" data-wc-code="5437">
-            Class 5437 (Framing)
-        </button>
-        <button class="wc-sub-btn" data-wc-code="5645">
-            Class 5645 (Interior)
-        </button>
-    </div>
-    
-    <div class="mobile-selector">
-        <label for="state-dropdown">Select a State:</label>
-        <select id="state-dropdown">
-            <option value="">Choose a state...</option>
-        </select>
-    </div>
-    
-    <div class="map-content-container">
-        <div class="map-wrapper">
-            <div id="us-map-svg">
-                <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Alaska -->
-                    <path id="state-AK" class="state-path" fill="#ddd" d="M 158,458 L 177,471 L 200,464 L 213,481 L 208,500 L 223,515 L 245,510 L 268,525 L 271,540 L 285,546 L 294,535 L 320,548 L 338,540 L 350,520 L 362,530 L 375,522 L 388,532 L 403,525 L 418,532 L 430,520 L 445,525 L 460,515 L 475,520 L 488,510 L 500,520 L 515,512 L 528,520 L 540,510 L 555,515 L 568,505 L 580,512 L 595,505 L 608,512 L 620,500 L 635,505 L 648,495 L 660,502 L 675,495 L 688,502 L 700,490 L 715,495 L 728,485 L 740,492 L 755,485 L 768,492 L 780,480 L 795,485 L 808,475 L 820,482 L 835,475 L 848,482 L 860,470 L 875,475 L 888,465 L 900,472 L 915,465 L 928,472 L 940,460 L 955,465 L 968,455 L 980,462 L 995,455 L 1008,462 L 1020,450 L 1035,455 L 1048,445 L 1060,452 L 1075,445 L 1088,452 L 1100,440 L 1115,445 L 1128,435 L 1140,442 L 1155,435 L 1168,442 L 1180,430 L 1195,435 L 1208,425 L 1220,432 L 1235,425 L 1248,432 L 1260,420 L 1275,425 L 1288,415 L 1300,422"/>
-                    
-                    <!-- Hawaii -->
-                    <circle id="state-HI" class="state-path" cx="250" cy="450" r="8" fill="#ddd"/>
-                    <circle id="state-HI-2" class="state-path" cx="265" cy="445" r="6" fill="#ddd"/>
-                    <circle id="state-HI-3" class="state-path" cx="280" cy="440" r="5" fill="#ddd"/>
-                    <circle id="state-HI-4" class="state-path" cx="295" cy="435" r="4" fill="#ddd"/>
-                    
-                    <!-- Continental US States -->
-                    <path id="state-WA" class="state-path" fill="#ddd" d="M 118,50 L 200,60 L 200,125 L 118,115 Z"/>
-                    <path id="state-OR" class="state-path" fill="#ddd" d="M 118,115 L 200,125 L 195,185 L 118,175 Z"/>
-                    <path id="state-CA" class="state-path" fill="#ddd" d="M 118,175 L 195,185 L 185,315 L 108,305 Z"/>
-                    <path id="state-NV" class="state-path" fill="#ddd" d="M 195,185 L 235,190 L 230,270 L 185,315 L 195,185 Z"/>
-                    <path id="state-ID" class="state-path" fill="#ddd" d="M 200,60 L 240,65 L 235,145 L 200,125 L 200,60 Z"/>
-                    <path id="state-UT" class="state-path" fill="#ddd" d="M 235,145 L 275,150 L 270,210 L 235,190 L 235,145 Z"/>
-                    <path id="state-AZ" class="state-path" fill="#ddd" d="M 230,270 L 275,275 L 270,315 L 185,315 L 230,270 Z"/>
-                    <path id="state-MT" class="state-path" fill="#ddd" d="M 240,65 L 355,75 L 350,130 L 235,145 L 240,65 Z"/>
-                    <path id="state-WY" class="state-path" fill="#ddd" d="M 235,145 L 350,130 L 345,195 L 275,150 L 235,145 Z"/>
-                    <path id="state-CO" class="state-path" fill="#ddd" d="M 275,150 L 345,195 L 340,250 L 275,210 L 275,150 Z"/>
-                    <path id="state-NM" class="state-path" fill="#ddd" d="M 270,210 L 340,250 L 335,315 L 270,315 L 270,210 Z"/>
-                    <path id="state-ND" class="state-path" fill="#ddd" d="M 355,75 L 430,80 L 425,130 L 350,130 L 355,75 Z"/>
-                    <path id="state-SD" class="state-path" fill="#ddd" d="M 350,130 L 425,130 L 420,185 L 345,195 L 350,130 Z"/>
-                    <path id="state-NE" class="state-path" fill="#ddd" d="M 345,195 L 420,185 L 415,240 L 340,250 L 345,195 Z"/>
-                    <path id="state-KS" class="state-path" fill="#ddd" d="M 340,250 L 415,240 L 410,295 L 335,315 L 340,250 Z"/>
-                    <path id="state-OK" class="state-path" fill="#ddd" d="M 335,315 L 410,295 L 405,355 L 335,355 L 335,315 Z"/>
-                    <path id="state-TX" class="state-path" fill="#ddd" d="M 335,355 L 405,355 L 400,450 L 295,440 L 335,355 Z"/>
-                    <path id="state-MN" class="state-path" fill="#ddd" d="M 430,80 L 485,85 L 480,140 L 425,130 L 430,80 Z"/>
-                    <path id="state-IA" class="state-path" fill="#ddd" d="M 420,185 L 480,190 L 475,245 L 415,240 L 420,185 Z"/>
-                    <path id="state-MO" class="state-path" fill="#ddd" d="M 415,240 L 475,245 L 470,300 L 410,295 L 415,240 Z"/>
-                    <path id="state-AR" class="state-path" fill="#ddd" d="M 410,295 L 470,300 L 465,355 L 405,355 L 410,295 Z"/>
-                    <path id="state-LA" class="state-path" fill="#ddd" d="M 405,355 L 465,355 L 460,405 L 400,450 L 405,355 Z"/>
-                    <path id="state-WI" class="state-path" fill="#ddd" d="M 485,85 L 530,90 L 525,150 L 480,140 L 485,85 Z"/>
-                    <path id="state-IL" class="state-path" fill="#ddd" d="M 480,190 L 525,195 L 520,255 L 475,245 L 480,190 Z"/>
-                    <path id="state-MS" class="state-path" fill="#ddd" d="M 465,355 L 510,360 L 505,410 L 460,405 L 465,355 Z"/>
-                    <path id="state-AL" class="state-path" fill="#ddd" d="M 510,360 L 555,365 L 550,415 L 505,410 L 510,360 Z"/>
-                    <path id="state-TN" class="state-path" fill="#ddd" d="M 470,300 L 555,305 L 550,355 L 465,355 L 470,300 Z"/>
-                    <path id="state-KY" class="state-path" fill="#ddd" d="M 475,245 L 555,250 L 550,305 L 470,300 L 475,245 Z"/>
-                    <path id="state-IN" class="state-path" fill="#ddd" d="M 525,195 L 570,200 L 565,260 L 520,255 L 525,195 Z"/>
-                    <path id="state-MI" class="state-path" fill="#ddd" d="M 530,90 L 580,95 L 575,160 L 525,150 L 530,90 Z"/>
-                    <path id="state-OH" class="state-path" fill="#ddd" d="M 570,200 L 615,205 L 610,265 L 565,260 L 570,200 Z"/>
-                    <path id="state-WV" class="state-path" fill="#ddd" d="M 555,250 L 615,255 L 610,305 L 550,305 L 555,250 Z"/>
-                    <path id="state-VA" class="state-path" fill="#ddd" d="M 610,305 L 670,310 L 665,355 L 610,350 L 610,305 Z"/>
-                    <path id="state-NC" class="state-path" fill="#ddd" d="M 550,355 L 665,360 L 660,405 L 550,400 L 550,355 Z"/>
-                    <path id="state-SC" class="state-path" fill="#ddd" d="M 550,400 L 615,405 L 610,445 L 550,440 L 550,400 Z"/>
-                    <path id="state-GA" class="state-path" fill="#ddd" d="M 550,415 L 600,420 L 595,470 L 545,465 L 550,415 Z"/>
-                    <path id="state-FL" class="state-path" fill="#ddd" d="M 595,470 L 645,475 L 640,530 L 585,525 L 595,470 Z"/>
-                    <path id="state-PA" class="state-path" fill="#ddd" d="M 615,205 L 680,210 L 675,270 L 610,265 L 615,205 Z"/>
-                    <path id="state-NY" class="state-path" fill="#ddd" d="M 580,95 L 680,100 L 675,170 L 575,160 L 580,95 Z"/>
-                    <path id="state-VT" class="state-path" fill="#ddd" d="M 680,100 L 705,102 L 700,140 L 675,138 L 680,100 Z"/>
-                    <path id="state-NH" class="state-path" fill="#ddd" d="M 705,102 L 730,104 L 725,142 L 700,140 L 705,102 Z"/>
-                    <path id="state-ME" class="state-path" fill="#ddd" d="M 730,50 L 780,55 L 775,125 L 725,120 L 730,50 Z"/>
-                    <path id="state-MA" class="state-path" fill="#ddd" d="M 700,140 L 750,145 L 745,170 L 695,165 L 700,140 Z"/>
-                    <path id="state-RI" class="state-path" fill="#ddd" d="M 745,170 L 760,172 L 757,185 L 742,183 L 745,170 Z"/>
-                    <path id="state-CT" class="state-path" fill="#ddd" d="M 695,165 L 745,170 L 740,190 L 690,185 L 695,165 Z"/>
-                    <path id="state-NJ" class="state-path" fill="#ddd" d="M 675,270 L 700,275 L 695,310 L 670,305 L 675,270 Z"/>
-                    <path id="state-DE" class="state-path" fill="#ddd" d="M 700,275 L 715,277 L 712,295 L 697,293 L 700,275 Z"/>
-                    <path id="state-MD" class="state-path" fill="#ddd" d="M 670,305 L 715,310 L 710,340 L 665,335 L 670,305 Z"/>
-                </svg>
-            </div>
-            
-            <div class="legend">
-                <span class="legend-min">Low</span>
-                <div class="legend-scale">
-                    <div class="legend-color heat-0"></div>
-                    <div class="legend-color heat-1"></div>
-                    <div class="legend-color heat-2"></div>
-                    <div class="legend-color heat-3"></div>
-                    <div class="legend-color heat-4"></div>
-                    <div class="legend-color heat-5"></div>
-                    <div class="legend-color heat-6"></div>
-                    <div class="legend-color heat-7"></div>
-                </div>
-                <span class="legend-max">High</span>
-            </div>
-            
-            <!-- Tooltip/Info Box -->
-            <div id="map-tooltip" class="info-box-hover">
-                <div class="state-name">State Name</div>
-                <div class="metric-label">Metric Label</div>
-                <div class="metric-value">Value</div>
-            </div>
-        </div>
-        
-        <div class="info-card">
-            <div class="info-card-content">
-                <h3 class="state-name">Select a State</h3>
-                <div class="metric-value">--</div>
-                <p class="metric-description">Click on a state to view insurance metrics</p>
-                <a href="#" class="cta-link" style="display: none;">Get Free Quotes →</a>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
 (function() {
     try {
+        console.log('Map initialization function executing...');
+        
         // Data definitions for carpenter insurance metrics
         window.DATA = {
         glPremiumPct: {
@@ -664,6 +152,19 @@
     window.currentWCCode = '5437';
     window.selectedState = null;
     
+    // Hawaii multi-element fixes
+    function normalizeStateCode(stateCode) {
+        // Remove any suffix after dash (e.g., HI-2 -> HI)
+        return stateCode.split('-')[0];
+    }
+    
+    function getStateEls(stateCode) {
+        // Return all elements for a state including multi-part states like Hawaii
+        var normalized = normalizeStateCode(stateCode);
+        var elements = document.querySelectorAll('[id^="state-' + normalized + '"]');
+        return Array.prototype.slice.call(elements);
+    }
+    
     // Color calculation functions
     function getHeatmapColor(value, min, max, reverseScale) {
         if (value == null || min == null || max == null) {
@@ -683,6 +184,7 @@
     }
     
     window.updateMapColors = function() {
+        console.log('Updating map colors for metric:', window.currentMetric);
         var metricData = window.DATA[window.currentMetric];
         var config = window.METRIC_CONFIG[window.currentMetric];
         
@@ -701,15 +203,20 @@
         
         for (var state in metricData) {
             if (metricData.hasOwnProperty(state)) {
-                var stateElement = document.querySelector('#state-' + state);
-                if (stateElement) {
-                    for (var i = 0; i <= 7; i++) {
-                        stateElement.classList.remove('heat-' + i);
+                // Get all elements for this state (handles Hawaii's multiple islands)
+                var stateElements = getStateEls(state);
+                
+                for (var i = 0; i < stateElements.length; i++) {
+                    var element = stateElements[i];
+                    
+                    // Remove all heat classes
+                    for (var j = 0; j <= 7; j++) {
+                        element.classList.remove('heat-' + j);
                     }
                     
                     var val = window.currentMetric === 'glPremiumPct' ? metricData[state].midpoint : metricData[state];
                     var colorClass = getHeatmapColor(val, min, max, config.reverseScale);
-                    stateElement.classList.add(colorClass);
+                    element.classList.add(colorClass);
                 }
             }
         }
@@ -868,8 +375,9 @@
     }
     
     window.showTooltip = function(event, stateCode) {
+        var normalizedCode = normalizeStateCode(stateCode);
         var tooltip = document.getElementById('map-tooltip');
-        var metricData = window.DATA[window.currentMetric] && window.DATA[window.currentMetric][stateCode] ? window.DATA[window.currentMetric][stateCode] : null;
+        var metricData = window.DATA[window.currentMetric] && window.DATA[window.currentMetric][normalizedCode] ? window.DATA[window.currentMetric][normalizedCode] : null;
         var config = window.METRIC_CONFIG[window.currentMetric];
         
         if (metricData && tooltip && config) {
@@ -881,7 +389,7 @@
             var metricLabelEl = tooltip.querySelector('.metric-label');
             var metricValueEl = tooltip.querySelector('.metric-value');
             
-            if (stateNameEl) stateNameEl.textContent = window.STATE_NAMES[stateCode] || '';
+            if (stateNameEl) stateNameEl.textContent = window.STATE_NAMES[normalizedCode] || '';
             if (metricLabelEl) metricLabelEl.textContent = config.label || '';
             if (metricValueEl) metricValueEl.textContent = formattedValue || '';
             
@@ -914,11 +422,16 @@
     };
     
     window.handleStateClick = function(stateCode) {
-        var state = document.getElementById('state-' + stateCode);
-        if (!state) return;
+        var normalizedCode = normalizeStateCode(stateCode);
         
-        var isAlreadySelected = state.classList.contains('selected');
+        // Get all elements for this state (handles Hawaii's multiple islands)
+        var stateElements = getStateEls(normalizedCode);
         
+        if (stateElements.length === 0) return;
+        
+        var isAlreadySelected = stateElements[0].classList.contains('selected');
+        
+        // Clear all selections
         var allStates = document.querySelectorAll('.state-path');
         for (var i = 0; i < allStates.length; i++) {
             allStates[i].classList.remove('selected');
@@ -928,9 +441,12 @@
             window.selectedState = null;
             window.updateInfoCard(null);
         } else {
-            state.classList.add('selected');
-            window.selectedState = stateCode;
-            window.updateInfoCard(stateCode);
+            // Select all elements for this state
+            for (var j = 0; j < stateElements.length; j++) {
+                stateElements[j].classList.add('selected');
+            }
+            window.selectedState = normalizedCode;
+            window.updateInfoCard(normalizedCode);
         }
         
         window.hideTooltip();
@@ -947,11 +463,12 @@
     };
     
     function initializeStateInteractions() {
+        console.log('Initializing state interactions...');
         var states = document.querySelectorAll('.state-path');
         
         for (var i = 0; i < states.length; i++) {
             var state = states[i];
-            var stateCode = state.id.replace('state-', '');
+            var stateCode = normalizeStateCode(state.id.replace('state-', ''));
             
             state.addEventListener('click', function(code) {
                 return function() {
@@ -978,6 +495,7 @@
         if (window.mapInitialized) return;
         window.mapInitialized = true;
         
+        console.log('Initializing map with robust pattern...');
         initializeStateInteractions();
         window.updateMapColors();
         populateDropdown();
@@ -986,11 +504,19 @@
         window.updateInfoCard(null);
     }
     
-    // WordPress robust initialization with polling
+    // WordPress robust initialization with polling - no early returns
     function tryInit() {
-        if (window.mapInitialized) return;
+        console.log('Trying initialization...');
+        if (window.mapInitialized) {
+            console.log('Map already initialized');
+            return;
+        }
         var root = document.getElementById('insurance-map-container');
-        if (!root) return;  // Only return here, not earlier
+        if (!root) {
+            console.log('Container not found yet');
+            return;
+        }
+        console.log('Container found, initializing map');
         initializeMap();
     }
     
@@ -1023,4 +549,3 @@
         }
     }
 })();
-</script>

@@ -514,8 +514,12 @@
 </div>
 
 <script>
+console.log('Insurance map script starting at bottom of DOM - DOM elements should be available immediately');
+
 (function() {
     try {
+        console.log('Map initialization function executing with DOM ready...');
+        
         // Data definitions for carpenter insurance metrics
         window.DATA = {
         glPremiumPct: {
@@ -664,6 +668,19 @@
     window.currentWCCode = '5437';
     window.selectedState = null;
     
+    // Hawaii multi-element fixes
+    function normalizeStateCode(stateCode) {
+        // Remove any suffix after dash (e.g., HI-2 -> HI)
+        return stateCode.split('-')[0];
+    }
+    
+    function getStateEls(stateCode) {
+        // Return all elements for a state including multi-part states like Hawaii
+        var normalized = normalizeStateCode(stateCode);
+        var elements = document.querySelectorAll('[id^="state-' + normalized + '"]');
+        return Array.prototype.slice.call(elements);
+    }
+    
     // Color calculation functions
     function getHeatmapColor(value, min, max, reverseScale) {
         if (value == null || min == null || max == null) {
@@ -683,6 +700,7 @@
     }
     
     window.updateMapColors = function() {
+        console.log('Updating map colors for metric:', window.currentMetric);
         var metricData = window.DATA[window.currentMetric];
         var config = window.METRIC_CONFIG[window.currentMetric];
         
@@ -701,15 +719,20 @@
         
         for (var state in metricData) {
             if (metricData.hasOwnProperty(state)) {
-                var stateElement = document.querySelector('#state-' + state);
-                if (stateElement) {
-                    for (var i = 0; i <= 7; i++) {
-                        stateElement.classList.remove('heat-' + i);
+                // Get all elements for this state (handles Hawaii's multiple islands)
+                var stateElements = getStateEls(state);
+                
+                for (var i = 0; i < stateElements.length; i++) {
+                    var element = stateElements[i];
+                    
+                    // Remove all heat classes
+                    for (var j = 0; j <= 7; j++) {
+                        element.classList.remove('heat-' + j);
                     }
                     
                     var val = window.currentMetric === 'glPremiumPct' ? metricData[state].midpoint : metricData[state];
                     var colorClass = getHeatmapColor(val, min, max, config.reverseScale);
-                    stateElement.classList.add(colorClass);
+                    element.classList.add(colorClass);
                 }
             }
         }
@@ -868,8 +891,9 @@
     }
     
     window.showTooltip = function(event, stateCode) {
+        var normalizedCode = normalizeStateCode(stateCode);
         var tooltip = document.getElementById('map-tooltip');
-        var metricData = window.DATA[window.currentMetric] && window.DATA[window.currentMetric][stateCode] ? window.DATA[window.currentMetric][stateCode] : null;
+        var metricData = window.DATA[window.currentMetric] && window.DATA[window.currentMetric][normalizedCode] ? window.DATA[window.currentMetric][normalizedCode] : null;
         var config = window.METRIC_CONFIG[window.currentMetric];
         
         if (metricData && tooltip && config) {
@@ -881,7 +905,7 @@
             var metricLabelEl = tooltip.querySelector('.metric-label');
             var metricValueEl = tooltip.querySelector('.metric-value');
             
-            if (stateNameEl) stateNameEl.textContent = window.STATE_NAMES[stateCode] || '';
+            if (stateNameEl) stateNameEl.textContent = window.STATE_NAMES[normalizedCode] || '';
             if (metricLabelEl) metricLabelEl.textContent = config.label || '';
             if (metricValueEl) metricValueEl.textContent = formattedValue || '';
             
@@ -914,11 +938,16 @@
     };
     
     window.handleStateClick = function(stateCode) {
-        var state = document.getElementById('state-' + stateCode);
-        if (!state) return;
+        var normalizedCode = normalizeStateCode(stateCode);
         
-        var isAlreadySelected = state.classList.contains('selected');
+        // Get all elements for this state (handles Hawaii's multiple islands)
+        var stateElements = getStateEls(normalizedCode);
         
+        if (stateElements.length === 0) return;
+        
+        var isAlreadySelected = stateElements[0].classList.contains('selected');
+        
+        // Clear all selections
         var allStates = document.querySelectorAll('.state-path');
         for (var i = 0; i < allStates.length; i++) {
             allStates[i].classList.remove('selected');
@@ -928,9 +957,12 @@
             window.selectedState = null;
             window.updateInfoCard(null);
         } else {
-            state.classList.add('selected');
-            window.selectedState = stateCode;
-            window.updateInfoCard(stateCode);
+            // Select all elements for this state
+            for (var j = 0; j < stateElements.length; j++) {
+                stateElements[j].classList.add('selected');
+            }
+            window.selectedState = normalizedCode;
+            window.updateInfoCard(normalizedCode);
         }
         
         window.hideTooltip();
@@ -947,11 +979,12 @@
     };
     
     function initializeStateInteractions() {
+        console.log('Initializing state interactions...');
         var states = document.querySelectorAll('.state-path');
         
         for (var i = 0; i < states.length; i++) {
             var state = states[i];
-            var stateCode = state.id.replace('state-', '');
+            var stateCode = normalizeStateCode(state.id.replace('state-', ''));
             
             state.addEventListener('click', function(code) {
                 return function() {
@@ -978,43 +1011,24 @@
         if (window.mapInitialized) return;
         window.mapInitialized = true;
         
+        console.log('Initializing map - DOM already exists, no polling needed');
         initializeStateInteractions();
         window.updateMapColors();
         populateDropdown();
         initializeToggles();
         initializeDropdown();
         window.updateInfoCard(null);
+        console.log('Map initialization complete!');
     }
     
-    // WordPress robust initialization with polling
-    function tryInit() {
-        if (window.mapInitialized) return;
-        var root = document.getElementById('insurance-map-container');
-        if (!root) return;  // Only return here, not earlier
+    // Simple initialization since DOM exists when script runs at bottom
+    var container = document.getElementById('insurance-map-container');
+    if (container) {
+        console.log('Container found immediately, initializing...');
         initializeMap();
-    }
-    
-    // Try now if ready, otherwise wait
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', tryInit);
     } else {
-        tryInit();
+        console.error('Container not found - this should not happen with bottom script placement');
     }
-    window.addEventListener('load', tryInit);
-    
-    // Poll for async content (WordPress often loads blocks later)
-    var initPoll = setInterval(function() {
-        if (window.mapInitialized) {
-            clearInterval(initPoll);
-            return;
-        }
-        tryInit();
-    }, 300);
-    
-    // Stop polling after 5 seconds
-    setTimeout(function() { 
-        clearInterval(initPoll); 
-    }, 5000);
     
     } catch (error) {
         // Log error if console exists

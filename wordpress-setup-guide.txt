@@ -1,0 +1,165 @@
+================================================================================
+                    WORDPRESS INSURANCE MAP SETUP GUIDE
+================================================================================
+
+QUICK DIAGNOSTIC TEST
+--------------------
+1. First, test if WordPress allows scripts in your setup:
+   - Copy contents of wordpress-diagnostic.html into a Custom HTML block
+   - Publish/Update the page
+   - View the page (NOT the editor preview)
+   - Check if you see an alert popup
+   - Open browser console (F12) and look for "WORDPRESS SCRIPT TEST"
+   
+   Results:
+   - If you see the alert/console logs: Scripts work! Try wordpress-final-attempt.html
+   - If no alert/logs: WordPress is stripping scripts. Use the separated files method below.
+
+================================================================================
+
+METHOD 1: COMBINED FILE (If Scripts Work)
+-----------------------------------------
+Use: wordpress-final-attempt.html
+
+1. Copy the ENTIRE contents of wordpress-final-attempt.html
+2. Paste into a WordPress Custom HTML block
+3. Publish/Update the page
+4. View on the front-end (not editor preview)
+
+This version includes:
+- Script at the top for better compatibility
+- Hawaii multi-element fixes
+- Robust initialization with polling
+- Console logging for debugging
+
+================================================================================
+
+METHOD 2: SEPARATED FILES (Recommended - Always Works)
+-------------------------------------------------------
+Use: carpenter-wordpress-html.html + carpenter-wordpress.js
+
+This method bypasses WordPress content filtering completely.
+
+OPTION A: Using Code Snippets Plugin (Easiest)
+------------------------------------------------
+1. Install the "Code Snippets" plugin from WordPress repository
+2. Add HTML to your page:
+   - Create/edit your page in WordPress
+   - Add a Custom HTML block
+   - Copy ALL contents from carpenter-wordpress-html.html
+   - Paste into the Custom HTML block
+   - Save/Update the page
+
+3. Add JavaScript via Code Snippets:
+   - Go to Snippets → Add New
+   - Title: "Insurance Map JavaScript"
+   - Code: Copy ALL contents from carpenter-wordpress.js
+   - Settings:
+     * Run snippet: Only run on site front-end
+     * Priority: 10
+   - Save and Activate
+
+4. View your page - the map should work!
+
+OPTION B: Using Theme Functions (For Developers)
+-------------------------------------------------
+1. Add HTML to your page (same as Option A, step 2)
+
+2. Add JavaScript file to theme:
+   - Upload carpenter-wordpress.js to:
+     /wp-content/themes/your-theme/js/carpenter-wordpress.js
+   
+3. Enqueue the script in functions.php:
+   ```php
+   add_action('wp_enqueue_scripts', function() {
+       wp_enqueue_script(
+           'insurance-map',
+           get_template_directory_uri() . '/js/carpenter-wordpress.js',
+           array(), // no dependencies
+           '1.0.0',
+           true // load in footer
+       );
+   });
+   ```
+
+OPTION C: Using a Custom Plugin
+--------------------------------
+1. Create a folder: /wp-content/plugins/insurance-map/
+2. Create plugin file: insurance-map.php
+   ```php
+   <?php
+   /*
+   Plugin Name: Insurance Map
+   Description: Interactive insurance cost map
+   Version: 1.0
+   */
+   
+   add_action('wp_enqueue_scripts', function() {
+       wp_enqueue_script(
+           'insurance-map',
+           plugin_dir_url(__FILE__) . 'carpenter-wordpress.js',
+           array(),
+           '1.0.0',
+           true
+       );
+   });
+   ```
+3. Upload carpenter-wordpress.js to the plugin folder
+4. Activate the plugin
+5. Add HTML to your page (same as Option A, step 2)
+
+================================================================================
+
+TROUBLESHOOTING
+---------------
+
+Issue: Map displays but states are gray, buttons don't work
+Solution: JavaScript isn't running. Use Method 2 (separated files)
+
+Issue: Map doesn't display at all
+Solution: Check if WordPress is stripping SVG. Install "Safe SVG" plugin
+
+Issue: Console shows "Cannot find insurance-map-container"
+Solution: Make sure HTML is added to the page before JavaScript runs
+
+Issue: Multiple Hawaii islands don't work together
+Solution: Use the latest version with Hawaii fixes (wordpress-final-attempt.html or carpenter-wordpress.js)
+
+Issue: Buttons have blue outline but don't work
+Solution: WordPress stripped onclick attributes. The separated files method fixes this.
+
+================================================================================
+
+TESTING YOUR INSTALLATION
+-------------------------
+1. Open the page in a browser (not the WordPress editor)
+2. Open browser Developer Console (F12)
+3. Look for: "Insurance map script starting..."
+4. Test functionality:
+   - Click different metric buttons
+   - Hover over states (should show tooltip)
+   - Click a state (should select and show info)
+   - Try the mobile dropdown (on small screens)
+
+================================================================================
+
+FILE DESCRIPTIONS
+-----------------
+- wordpress-diagnostic.html: Tests if WordPress allows scripts
+- wordpress-final-attempt.html: Combined file with all fixes
+- carpenter-wordpress-html.html: HTML/CSS only (no JavaScript)
+- carpenter-wordpress.js: JavaScript only (with Hawaii fixes)
+- index-wordpress-html.html: General contractor version (HTML only)
+- index-wordpress.js: General contractor version (JavaScript only)
+
+================================================================================
+
+SUPPORT
+-------
+If the map still doesn't work after following these instructions:
+1. Check browser console for errors
+2. Verify you're viewing the published page, not the editor preview
+3. Try the Code Snippets plugin method (most reliable)
+4. Consider WordPress security settings or content filtering plugins
+
+================================================================================

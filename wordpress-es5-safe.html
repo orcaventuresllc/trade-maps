@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WordPress ES5 Safe Version - Copy Everything Below</title>
+</head>
+<body>
+
+<!-- ================================================== -->
+<!-- COPY EVERYTHING BELOW THIS LINE INTO WORDPRESS -->
+<!-- ================================================== -->
+
+<style>
+#insurance-map-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.map-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.map-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.metric-toggles {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.metric-btn {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.metric-btn:hover {
+    background: #f5f5f5;
+}
+
+.metric-btn.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.map-wrapper {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+/* State path styles */
+.state-path {
+    stroke: #fff;
+    stroke-width: 0.5;
+    cursor: pointer;
+    transition: all 0.2s;
+    fill: #e5e7eb;
+}
+
+.state-path:hover {
+    stroke: #333;
+    stroke-width: 1.5;
+}
+
+.state-path.selected {
+    stroke: #dc2626 !important;
+    stroke-width: 2 !important;
+    fill: #fca5a5 !important;
+}
+
+/* Heat colors */
+.heat-0 { fill: #fee2e2; }
+.heat-1 { fill: #fecaca; }
+.heat-2 { fill: #fca5a5; }
+.heat-3 { fill: #f87171; }
+.heat-4 { fill: #ef4444; }
+.heat-5 { fill: #dc2626; }
+.heat-6 { fill: #b91c1c; }
+.heat-7 { fill: #991b1b; }
+
+.info-card {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.state-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 10px;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+/* Debug console */
+#debug-console {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    max-height: 200px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.8);
+    color: #0f0;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 9999;
+}
+</style>
+
+<div id="insurance-map-container">
+    <div class="map-header">
+        <h2>Carpenter Insurance Cost Metrics by State</h2>
+    </div>
+    
+    <div class="metric-toggles">
+        <button class="metric-btn active" data-metric="glPremium">GL Premium %</button>
+        <button class="metric-btn" data-metric="glSavings">GL Savings %</button>
+        <button class="metric-btn" data-metric="wcRate">WC Rate</button>
+    </div>
+    
+    <div class="map-wrapper">
+        <div id="map-svg-container">
+            <!-- SVG will be injected here by JavaScript -->
+        </div>
+    </div>
+    
+    <div class="info-card">
+        <div class="state-name">Select a State</div>
+        <div class="metric-value">--</div>
+    </div>
+    
+    <div id="debug-console"></div>
+</div>
+
+<script>
+// Pure ES5 JavaScript - No ES6 features
+(function() {
+    'use strict';
+    
+    // Debug logging that works everywhere
+    function debug(msg) {
+        try {
+            console.log('[WP-MAP] ' + msg);
+            var debugEl = document.getElementById('debug-console');
+            if (debugEl) {
+                var time = new Date().toLocaleTimeString();
+                debugEl.innerHTML += time + ': ' + msg + '<br>';
+                debugEl.scrollTop = debugEl.scrollHeight;
+            }
+        } catch(e) {}
+    }
+    
+    debug('Script starting...');
+    
+    // Simple state data (just a few states for testing)
+    var stateData = {
+        glPremium: {
+            CA: 1.0, TX: 0.8, FL: 0.85, NY: 0.75, IL: 0.85
+        },
+        glSavings: {
+            CA: 35.8, TX: 21.2, FL: 29.5, NY: 28.9, IL: 46.9
+        },
+        wcRate: {
+            CA: 5.62, TX: 3.55, FL: 6.23, NY: 9.50, IL: 9.75
+        }
+    };
+    
+    var currentMetric = 'glPremium';
+    var selectedState = null;
+    
+    // Create simple SVG for testing
+    function createTestSVG() {
+        debug('Creating test SVG...');
+        
+        var svg = '<svg width="600" height="400" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">';
+        svg += '<rect id="state-CA" class="state-path" x="50" y="150" width="60" height="80" />';
+        svg += '<rect id="state-TX" class="state-path" x="250" y="250" width="80" height="60" />';
+        svg += '<rect id="state-FL" class="state-path" x="450" y="300" width="50" height="40" />';
+        svg += '<rect id="state-NY" class="state-path" x="480" y="100" width="50" height="40" />';
+        svg += '<rect id="state-IL" class="state-path" x="350" y="150" width="40" height="50" />';
+        svg += '</svg>';
+        
+        return svg;
+    }
+    
+    // Update colors
+    function updateColors() {
+        debug('Updating colors for metric: ' + currentMetric);
+        
+        var data = stateData[currentMetric];
+        if (!data) {
+            debug('No data for metric: ' + currentMetric);
+            return;
+        }
+        
+        // Get all state elements
+        var states = document.querySelectorAll('.state-path');
+        debug('Found ' + states.length + ' states');
+        
+        // Calculate min/max
+        var values = [];
+        for (var key in data) {
+            if (data.hasOwnProperty(key)) {
+                values.push(data[key]);
+            }
+        }
+        
+        if (values.length === 0) return;
+        
+        var min = Math.min.apply(null, values);
+        var max = Math.max.apply(null, values);
+        
+        // Update each state
+        for (var i = 0; i < states.length; i++) {
+            var state = states[i];
+            var stateCode = state.id.replace('state-', '');
+            var value = data[stateCode];
+            
+            // Remove old heat classes
+            for (var j = 0; j <= 7; j++) {
+                state.classList.remove('heat-' + j);
+            }
+            
+            // Add new heat class
+            if (value !== undefined) {
+                var normalized = (value - min) / (max - min);
+                var heat = Math.floor(normalized * 8);
+                heat = Math.min(7, Math.max(0, heat));
+                state.classList.add('heat-' + heat);
+                debug('State ' + stateCode + ' set to heat-' + heat);
+            }
+        }
+    }
+    
+    // Handle state click
+    function handleStateClick(event) {
+        var target = event.target;
+        
+        if (!target.classList || !target.classList.contains('state-path')) {
+            return;
+        }
+        
+        var stateCode = target.id.replace('state-', '');
+        debug('State clicked: ' + stateCode);
+        
+        // Remove previous selection
+        var allStates = document.querySelectorAll('.state-path');
+        for (var i = 0; i < allStates.length; i++) {
+            allStates[i].classList.remove('selected');
+        }
+        
+        // Toggle selection
+        if (selectedState === stateCode) {
+            selectedState = null;
+            updateInfo(null);
+        } else {
+            target.classList.add('selected');
+            selectedState = stateCode;
+            updateInfo(stateCode);
+        }
+    }
+    
+    // Update info display
+    function updateInfo(stateCode) {
+        var nameEl = document.querySelector('.state-name');
+        var valueEl = document.querySelector('.metric-value');
+        
+        if (!nameEl || !valueEl) return;
+        
+        if (stateCode) {
+            nameEl.textContent = stateCode;
+            var value = stateData[currentMetric][stateCode];
+            valueEl.textContent = value ? value.toString() : '--';
+        } else {
+            nameEl.textContent = 'Select a State';
+            valueEl.textContent = '--';
+        }
+    }
+    
+    // Handle metric button click
+    function handleMetricClick(event) {
+        var target = event.target;
+        
+        if (!target.classList || !target.classList.contains('metric-btn')) {
+            return;
+        }
+        
+        var metric = target.getAttribute('data-metric');
+        debug('Metric clicked: ' + metric);
+        
+        // Update active button
+        var buttons = document.querySelectorAll('.metric-btn');
+        for (var i = 0; i < buttons.length; i++) {
+            buttons[i].classList.remove('active');
+        }
+        target.classList.add('active');
+        
+        // Update metric and colors
+        currentMetric = metric;
+        updateColors();
+        
+        // Update info if state selected
+        if (selectedState) {
+            updateInfo(selectedState);
+        }
+    }
+    
+    // Initialize everything
+    function init() {
+        debug('Initializing...');
+        
+        try {
+            // Insert SVG
+            var container = document.getElementById('map-svg-container');
+            if (!container) {
+                debug('ERROR: map-svg-container not found!');
+                return;
+            }
+            
+            container.innerHTML = createTestSVG();
+            debug('SVG inserted');
+            
+            // Add click listener to map container (event delegation)
+            container.addEventListener('click', handleStateClick);
+            debug('Added state click listener');
+            
+            // Add click listener to buttons container (event delegation)
+            var buttonContainer = document.querySelector('.metric-toggles');
+            if (buttonContainer) {
+                buttonContainer.addEventListener('click', handleMetricClick);
+                debug('Added metric click listener');
+            }
+            
+            // Initial color update
+            updateColors();
+            
+            debug('Initialization complete!');
+            
+        } catch (error) {
+            debug('ERROR: ' + error.message);
+        }
+    }
+    
+    // Wait for DOM to be ready
+    function domReady() {
+        debug('Checking DOM ready state: ' + document.readyState);
+        
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            // DOM is ready
+            setTimeout(init, 100); // Small delay for WordPress
+        } else {
+            // Wait for DOM
+            document.addEventListener('DOMContentLoaded', init);
+        }
+    }
+    
+    // Start
+    domReady();
+    
+})();
+</script>
+
+<!-- ================================================== -->
+<!-- COPY EVERYTHING ABOVE THIS LINE INTO WORDPRESS -->
+<!-- ================================================== -->
+
+</body>
+</html>

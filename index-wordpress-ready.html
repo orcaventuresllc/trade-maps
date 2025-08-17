@@ -347,16 +347,16 @@
     </div>
     
     <div class="metric-toggles">
-        <button class="metric-btn active" data-metric="glPremiumPct" onclick="window.handleMetricToggle('glPremiumPct')">
+        <button class="metric-btn active" data-metric="glPremiumPct">
             GL Premium %
         </button>
-        <button class="metric-btn" data-metric="glSavingsPct" onclick="window.handleMetricToggle('glSavingsPct')">
+        <button class="metric-btn" data-metric="glSavingsPct">
             GL Savings %
         </button>
-        <button class="metric-btn" data-metric="glCompetitiveness" onclick="window.handleMetricToggle('glCompetitiveness')">
+        <button class="metric-btn" data-metric="glCompetitiveness">
             GL Competitiveness
         </button>
-        <button class="metric-btn" data-metric="wcRate" onclick="window.handleMetricToggle('wcRate')">
+        <button class="metric-btn" data-metric="wcRate">
             WC Rate
         </button>
     </div>
@@ -373,63 +373,63 @@
             <div id="us-map-svg">
                 <svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
                     <!-- Alaska -->
-                    <path id="state-AK" class="state-path" fill="#ddd" d="M 158,458 L 177,471 L 200,464 L 213,481 L 208,500 L 223,515 L 245,510 L 268,525 L 271,540 L 285,546 L 294,535 L 320,548 L 338,540 L 350,520 L 362,530 L 375,522 L 388,532 L 403,525 L 418,532 L 430,520 L 445,525 L 460,515 L 475,520 L 488,510 L 500,520 L 515,512 L 528,520 L 540,510 L 555,515 L 568,505 L 580,512 L 595,505 L 608,512 L 620,500 L 635,505 L 648,495 L 660,502 L 675,495 L 688,502 L 700,490 L 715,495 L 728,485 L 740,492 L 755,485 L 768,492 L 780,480 L 795,485 L 808,475 L 820,482 L 835,475 L 848,482 L 860,470 L 875,475 L 888,465 L 900,472 L 915,465 L 928,472 L 940,460 L 955,465 L 968,455 L 980,462 L 995,455 L 1008,462 L 1020,450 L 1035,455 L 1048,445 L 1060,452 L 1075,445 L 1088,452 L 1100,440 L 1115,445 L 1128,435 L 1140,442 L 1155,435 L 1168,442 L 1180,430 L 1195,435 L 1208,425 L 1220,432 L 1235,425 L 1248,432 L 1260,420 L 1275,425 L 1288,415 L 1300,422" onclick="window.handleStateClick('AK')" onmouseover="window.handleStateHover(event, 'AK')" onmouseout="window.handleStateLeave()"/>
+                    <path id="state-AK" class="state-path" fill="#ddd" d="M 158,458 L 177,471 L 200,464 L 213,481 L 208,500 L 223,515 L 245,510 L 268,525 L 271,540 L 285,546 L 294,535 L 320,548 L 338,540 L 350,520 L 362,530 L 375,522 L 388,532 L 403,525 L 418,532 L 430,520 L 445,525 L 460,515 L 475,520 L 488,510 L 500,520 L 515,512 L 528,520 L 540,510 L 555,515 L 568,505 L 580,512 L 595,505 L 608,512 L 620,500 L 635,505 L 648,495 L 660,502 L 675,495 L 688,502 L 700,490 L 715,495 L 728,485 L 740,492 L 755,485 L 768,492 L 780,480 L 795,485 L 808,475 L 820,482 L 835,475 L 848,482 L 860,470 L 875,475 L 888,465 L 900,472 L 915,465 L 928,472 L 940,460 L 955,465 L 968,455 L 980,462 L 995,455 L 1008,462 L 1020,450 L 1035,455 L 1048,445 L 1060,452 L 1075,445 L 1088,452 L 1100,440 L 1115,445 L 1128,435 L 1140,442 L 1155,435 L 1168,442 L 1180,430 L 1195,435 L 1208,425 L 1220,432 L 1235,425 L 1248,432 L 1260,420 L 1275,425 L 1288,415 L 1300,422"/>
                     
                     <!-- Hawaii -->
-                    <circle id="state-HI" class="state-path" cx="250" cy="450" r="8" fill="#ddd" onclick="window.handleStateClick('HI')" onmouseover="window.handleStateHover(event, 'HI')" onmouseout="window.handleStateLeave()"/>
-                    <circle id="state-HI-2" class="state-path" cx="265" cy="445" r="6" fill="#ddd" onclick="window.handleStateClick('HI')" onmouseover="window.handleStateHover(event, 'HI')" onmouseout="window.handleStateLeave()"/>
-                    <circle id="state-HI-3" class="state-path" cx="280" cy="440" r="5" fill="#ddd" onclick="window.handleStateClick('HI')" onmouseover="window.handleStateHover(event, 'HI')" onmouseout="window.handleStateLeave()"/>
-                    <circle id="state-HI-4" class="state-path" cx="295" cy="435" r="4" fill="#ddd" onclick="window.handleStateClick('HI')" onmouseover="window.handleStateHover(event, 'HI')" onmouseout="window.handleStateLeave()"/>
+                    <circle id="state-HI" class="state-path" cx="250" cy="450" r="8" fill="#ddd"/>
+                    <circle id="state-HI-2" class="state-path" cx="265" cy="445" r="6" fill="#ddd"/>
+                    <circle id="state-HI-3" class="state-path" cx="280" cy="440" r="5" fill="#ddd"/>
+                    <circle id="state-HI-4" class="state-path" cx="295" cy="435" r="4" fill="#ddd"/>
                     
                     <!-- Continental US States -->
-                    <path id="state-WA" class="state-path" fill="#ddd" d="M 118,50 L 200,60 L 200,125 L 118,115 Z" onclick="window.handleStateClick('WA')" onmouseover="window.handleStateHover(event, 'WA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-OR" class="state-path" fill="#ddd" d="M 118,115 L 200,125 L 195,185 L 118,175 Z" onclick="window.handleStateClick('OR')" onmouseover="window.handleStateHover(event, 'OR')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-CA" class="state-path" fill="#ddd" d="M 118,175 L 195,185 L 185,315 L 108,305 Z" onclick="window.handleStateClick('CA')" onmouseover="window.handleStateHover(event, 'CA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NV" class="state-path" fill="#ddd" d="M 195,185 L 235,190 L 230,270 L 185,315 L 195,185 Z" onclick="window.handleStateClick('NV')" onmouseover="window.handleStateHover(event, 'NV')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-ID" class="state-path" fill="#ddd" d="M 200,60 L 240,65 L 235,145 L 200,125 L 200,60 Z" onclick="window.handleStateClick('ID')" onmouseover="window.handleStateHover(event, 'ID')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-UT" class="state-path" fill="#ddd" d="M 235,145 L 275,150 L 270,210 L 235,190 L 235,145 Z" onclick="window.handleStateClick('UT')" onmouseover="window.handleStateHover(event, 'UT')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-AZ" class="state-path" fill="#ddd" d="M 230,270 L 275,275 L 270,315 L 185,315 L 230,270 Z" onclick="window.handleStateClick('AZ')" onmouseover="window.handleStateHover(event, 'AZ')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MT" class="state-path" fill="#ddd" d="M 240,65 L 355,75 L 350,130 L 235,145 L 240,65 Z" onclick="window.handleStateClick('MT')" onmouseover="window.handleStateHover(event, 'MT')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-WY" class="state-path" fill="#ddd" d="M 235,145 L 350,130 L 345,195 L 275,150 L 235,145 Z" onclick="window.handleStateClick('WY')" onmouseover="window.handleStateHover(event, 'WY')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-CO" class="state-path" fill="#ddd" d="M 275,150 L 345,195 L 340,250 L 275,210 L 275,150 Z" onclick="window.handleStateClick('CO')" onmouseover="window.handleStateHover(event, 'CO')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NM" class="state-path" fill="#ddd" d="M 270,210 L 340,250 L 335,315 L 270,315 L 270,210 Z" onclick="window.handleStateClick('NM')" onmouseover="window.handleStateHover(event, 'NM')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-ND" class="state-path" fill="#ddd" d="M 355,75 L 430,80 L 425,130 L 350,130 L 355,75 Z" onclick="window.handleStateClick('ND')" onmouseover="window.handleStateHover(event, 'ND')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-SD" class="state-path" fill="#ddd" d="M 350,130 L 425,130 L 420,185 L 345,195 L 350,130 Z" onclick="window.handleStateClick('SD')" onmouseover="window.handleStateHover(event, 'SD')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NE" class="state-path" fill="#ddd" d="M 345,195 L 420,185 L 415,240 L 340,250 L 345,195 Z" onclick="window.handleStateClick('NE')" onmouseover="window.handleStateHover(event, 'NE')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-KS" class="state-path" fill="#ddd" d="M 340,250 L 415,240 L 410,295 L 335,315 L 340,250 Z" onclick="window.handleStateClick('KS')" onmouseover="window.handleStateHover(event, 'KS')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-OK" class="state-path" fill="#ddd" d="M 335,315 L 410,295 L 405,355 L 335,355 L 335,315 Z" onclick="window.handleStateClick('OK')" onmouseover="window.handleStateHover(event, 'OK')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-TX" class="state-path" fill="#ddd" d="M 335,355 L 405,355 L 400,450 L 295,440 L 335,355 Z" onclick="window.handleStateClick('TX')" onmouseover="window.handleStateHover(event, 'TX')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MN" class="state-path" fill="#ddd" d="M 430,80 L 485,85 L 480,140 L 425,130 L 430,80 Z" onclick="window.handleStateClick('MN')" onmouseover="window.handleStateHover(event, 'MN')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-IA" class="state-path" fill="#ddd" d="M 420,185 L 480,190 L 475,245 L 415,240 L 420,185 Z" onclick="window.handleStateClick('IA')" onmouseover="window.handleStateHover(event, 'IA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MO" class="state-path" fill="#ddd" d="M 415,240 L 475,245 L 470,300 L 410,295 L 415,240 Z" onclick="window.handleStateClick('MO')" onmouseover="window.handleStateHover(event, 'MO')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-AR" class="state-path" fill="#ddd" d="M 410,295 L 470,300 L 465,355 L 405,355 L 410,295 Z" onclick="window.handleStateClick('AR')" onmouseover="window.handleStateHover(event, 'AR')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-LA" class="state-path" fill="#ddd" d="M 405,355 L 465,355 L 460,405 L 400,450 L 405,355 Z" onclick="window.handleStateClick('LA')" onmouseover="window.handleStateHover(event, 'LA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-WI" class="state-path" fill="#ddd" d="M 485,85 L 530,90 L 525,150 L 480,140 L 485,85 Z" onclick="window.handleStateClick('WI')" onmouseover="window.handleStateHover(event, 'WI')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-IL" class="state-path" fill="#ddd" d="M 480,190 L 525,195 L 520,255 L 475,245 L 480,190 Z" onclick="window.handleStateClick('IL')" onmouseover="window.handleStateHover(event, 'IL')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MS" class="state-path" fill="#ddd" d="M 465,355 L 510,360 L 505,410 L 460,405 L 465,355 Z" onclick="window.handleStateClick('MS')" onmouseover="window.handleStateHover(event, 'MS')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-AL" class="state-path" fill="#ddd" d="M 510,360 L 555,365 L 550,415 L 505,410 L 510,360 Z" onclick="window.handleStateClick('AL')" onmouseover="window.handleStateHover(event, 'AL')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-TN" class="state-path" fill="#ddd" d="M 470,300 L 555,305 L 550,355 L 465,355 L 470,300 Z" onclick="window.handleStateClick('TN')" onmouseover="window.handleStateHover(event, 'TN')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-KY" class="state-path" fill="#ddd" d="M 475,245 L 555,250 L 550,305 L 470,300 L 475,245 Z" onclick="window.handleStateClick('KY')" onmouseover="window.handleStateHover(event, 'KY')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-IN" class="state-path" fill="#ddd" d="M 525,195 L 570,200 L 565,260 L 520,255 L 525,195 Z" onclick="window.handleStateClick('IN')" onmouseover="window.handleStateHover(event, 'IN')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MI" class="state-path" fill="#ddd" d="M 530,90 L 580,95 L 575,160 L 525,150 L 530,90 Z" onclick="window.handleStateClick('MI')" onmouseover="window.handleStateHover(event, 'MI')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-OH" class="state-path" fill="#ddd" d="M 570,200 L 615,205 L 610,265 L 565,260 L 570,200 Z" onclick="window.handleStateClick('OH')" onmouseover="window.handleStateHover(event, 'OH')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-WV" class="state-path" fill="#ddd" d="M 555,250 L 615,255 L 610,305 L 550,305 L 555,250 Z" onclick="window.handleStateClick('WV')" onmouseover="window.handleStateHover(event, 'WV')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-VA" class="state-path" fill="#ddd" d="M 610,305 L 670,310 L 665,355 L 610,350 L 610,305 Z" onclick="window.handleStateClick('VA')" onmouseover="window.handleStateHover(event, 'VA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NC" class="state-path" fill="#ddd" d="M 550,355 L 665,360 L 660,405 L 550,400 L 550,355 Z" onclick="window.handleStateClick('NC')" onmouseover="window.handleStateHover(event, 'NC')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-SC" class="state-path" fill="#ddd" d="M 550,400 L 615,405 L 610,445 L 550,440 L 550,400 Z" onclick="window.handleStateClick('SC')" onmouseover="window.handleStateHover(event, 'SC')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-GA" class="state-path" fill="#ddd" d="M 550,415 L 600,420 L 595,470 L 545,465 L 550,415 Z" onclick="window.handleStateClick('GA')" onmouseover="window.handleStateHover(event, 'GA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-FL" class="state-path" fill="#ddd" d="M 595,470 L 645,475 L 640,530 L 585,525 L 595,470 Z" onclick="window.handleStateClick('FL')" onmouseover="window.handleStateHover(event, 'FL')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-PA" class="state-path" fill="#ddd" d="M 615,205 L 680,210 L 675,270 L 610,265 L 615,205 Z" onclick="window.handleStateClick('PA')" onmouseover="window.handleStateHover(event, 'PA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NY" class="state-path" fill="#ddd" d="M 580,95 L 680,100 L 675,170 L 575,160 L 580,95 Z" onclick="window.handleStateClick('NY')" onmouseover="window.handleStateHover(event, 'NY')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-VT" class="state-path" fill="#ddd" d="M 680,100 L 705,102 L 700,140 L 675,138 L 680,100 Z" onclick="window.handleStateClick('VT')" onmouseover="window.handleStateHover(event, 'VT')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NH" class="state-path" fill="#ddd" d="M 705,102 L 730,104 L 725,142 L 700,140 L 705,102 Z" onclick="window.handleStateClick('NH')" onmouseover="window.handleStateHover(event, 'NH')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-ME" class="state-path" fill="#ddd" d="M 730,50 L 780,55 L 775,125 L 725,120 L 730,50 Z" onclick="window.handleStateClick('ME')" onmouseover="window.handleStateHover(event, 'ME')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MA" class="state-path" fill="#ddd" d="M 700,140 L 750,145 L 745,170 L 695,165 L 700,140 Z" onclick="window.handleStateClick('MA')" onmouseover="window.handleStateHover(event, 'MA')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-RI" class="state-path" fill="#ddd" d="M 745,170 L 760,172 L 757,185 L 742,183 L 745,170 Z" onclick="window.handleStateClick('RI')" onmouseover="window.handleStateHover(event, 'RI')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-CT" class="state-path" fill="#ddd" d="M 695,165 L 745,170 L 740,190 L 690,185 L 695,165 Z" onclick="window.handleStateClick('CT')" onmouseover="window.handleStateHover(event, 'CT')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-NJ" class="state-path" fill="#ddd" d="M 675,270 L 700,275 L 695,310 L 670,305 L 675,270 Z" onclick="window.handleStateClick('NJ')" onmouseover="window.handleStateHover(event, 'NJ')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-DE" class="state-path" fill="#ddd" d="M 700,275 L 715,277 L 712,295 L 697,293 L 700,275 Z" onclick="window.handleStateClick('DE')" onmouseover="window.handleStateHover(event, 'DE')" onmouseout="window.handleStateLeave()"/>
-                    <path id="state-MD" class="state-path" fill="#ddd" d="M 670,305 L 715,310 L 710,340 L 665,335 L 670,305 Z" onclick="window.handleStateClick('MD')" onmouseover="window.handleStateHover(event, 'MD')" onmouseout="window.handleStateLeave()"/>
+                    <path id="state-WA" class="state-path" fill="#ddd" d="M 118,50 L 200,60 L 200,125 L 118,115 Z"/>
+                    <path id="state-OR" class="state-path" fill="#ddd" d="M 118,115 L 200,125 L 195,185 L 118,175 Z"/>
+                    <path id="state-CA" class="state-path" fill="#ddd" d="M 118,175 L 195,185 L 185,315 L 108,305 Z"/>
+                    <path id="state-NV" class="state-path" fill="#ddd" d="M 195,185 L 235,190 L 230,270 L 185,315 L 195,185 Z"/>
+                    <path id="state-ID" class="state-path" fill="#ddd" d="M 200,60 L 240,65 L 235,145 L 200,125 L 200,60 Z"/>
+                    <path id="state-UT" class="state-path" fill="#ddd" d="M 235,145 L 275,150 L 270,210 L 235,190 L 235,145 Z"/>
+                    <path id="state-AZ" class="state-path" fill="#ddd" d="M 230,270 L 275,275 L 270,315 L 185,315 L 230,270 Z"/>
+                    <path id="state-MT" class="state-path" fill="#ddd" d="M 240,65 L 355,75 L 350,130 L 235,145 L 240,65 Z"/>
+                    <path id="state-WY" class="state-path" fill="#ddd" d="M 235,145 L 350,130 L 345,195 L 275,150 L 235,145 Z"/>
+                    <path id="state-CO" class="state-path" fill="#ddd" d="M 275,150 L 345,195 L 340,250 L 275,210 L 275,150 Z"/>
+                    <path id="state-NM" class="state-path" fill="#ddd" d="M 270,210 L 340,250 L 335,315 L 270,315 L 270,210 Z"/>
+                    <path id="state-ND" class="state-path" fill="#ddd" d="M 355,75 L 430,80 L 425,130 L 350,130 L 355,75 Z"/>
+                    <path id="state-SD" class="state-path" fill="#ddd" d="M 350,130 L 425,130 L 420,185 L 345,195 L 350,130 Z"/>
+                    <path id="state-NE" class="state-path" fill="#ddd" d="M 345,195 L 420,185 L 415,240 L 340,250 L 345,195 Z"/>
+                    <path id="state-KS" class="state-path" fill="#ddd" d="M 340,250 L 415,240 L 410,295 L 335,315 L 340,250 Z"/>
+                    <path id="state-OK" class="state-path" fill="#ddd" d="M 335,315 L 410,295 L 405,355 L 335,355 L 335,315 Z"/>
+                    <path id="state-TX" class="state-path" fill="#ddd" d="M 335,355 L 405,355 L 400,450 L 295,440 L 335,355 Z"/>
+                    <path id="state-MN" class="state-path" fill="#ddd" d="M 430,80 L 485,85 L 480,140 L 425,130 L 430,80 Z"/>
+                    <path id="state-IA" class="state-path" fill="#ddd" d="M 420,185 L 480,190 L 475,245 L 415,240 L 420,185 Z"/>
+                    <path id="state-MO" class="state-path" fill="#ddd" d="M 415,240 L 475,245 L 470,300 L 410,295 L 415,240 Z"/>
+                    <path id="state-AR" class="state-path" fill="#ddd" d="M 410,295 L 470,300 L 465,355 L 405,355 L 410,295 Z"/>
+                    <path id="state-LA" class="state-path" fill="#ddd" d="M 405,355 L 465,355 L 460,405 L 400,450 L 405,355 Z"/>
+                    <path id="state-WI" class="state-path" fill="#ddd" d="M 485,85 L 530,90 L 525,150 L 480,140 L 485,85 Z"/>
+                    <path id="state-IL" class="state-path" fill="#ddd" d="M 480,190 L 525,195 L 520,255 L 475,245 L 480,190 Z"/>
+                    <path id="state-MS" class="state-path" fill="#ddd" d="M 465,355 L 510,360 L 505,410 L 460,405 L 465,355 Z"/>
+                    <path id="state-AL" class="state-path" fill="#ddd" d="M 510,360 L 555,365 L 550,415 L 505,410 L 510,360 Z"/>
+                    <path id="state-TN" class="state-path" fill="#ddd" d="M 470,300 L 555,305 L 550,355 L 465,355 L 470,300 Z"/>
+                    <path id="state-KY" class="state-path" fill="#ddd" d="M 475,245 L 555,250 L 550,305 L 470,300 L 475,245 Z"/>
+                    <path id="state-IN" class="state-path" fill="#ddd" d="M 525,195 L 570,200 L 565,260 L 520,255 L 525,195 Z"/>
+                    <path id="state-MI" class="state-path" fill="#ddd" d="M 530,90 L 580,95 L 575,160 L 525,150 L 530,90 Z"/>
+                    <path id="state-OH" class="state-path" fill="#ddd" d="M 570,200 L 615,205 L 610,265 L 565,260 L 570,200 Z"/>
+                    <path id="state-WV" class="state-path" fill="#ddd" d="M 555,250 L 615,255 L 610,305 L 550,305 L 555,250 Z"/>
+                    <path id="state-VA" class="state-path" fill="#ddd" d="M 610,305 L 670,310 L 665,355 L 610,350 L 610,305 Z"/>
+                    <path id="state-NC" class="state-path" fill="#ddd" d="M 550,355 L 665,360 L 660,405 L 550,400 L 550,355 Z"/>
+                    <path id="state-SC" class="state-path" fill="#ddd" d="M 550,400 L 615,405 L 610,445 L 550,440 L 550,400 Z"/>
+                    <path id="state-GA" class="state-path" fill="#ddd" d="M 550,415 L 600,420 L 595,470 L 545,465 L 550,415 Z"/>
+                    <path id="state-FL" class="state-path" fill="#ddd" d="M 595,470 L 645,475 L 640,530 L 585,525 L 595,470 Z"/>
+                    <path id="state-PA" class="state-path" fill="#ddd" d="M 615,205 L 680,210 L 675,270 L 610,265 L 615,205 Z"/>
+                    <path id="state-NY" class="state-path" fill="#ddd" d="M 580,95 L 680,100 L 675,170 L 575,160 L 580,95 Z"/>
+                    <path id="state-VT" class="state-path" fill="#ddd" d="M 680,100 L 705,102 L 700,140 L 675,138 L 680,100 Z"/>
+                    <path id="state-NH" class="state-path" fill="#ddd" d="M 705,102 L 730,104 L 725,142 L 700,140 L 705,102 Z"/>
+                    <path id="state-ME" class="state-path" fill="#ddd" d="M 730,50 L 780,55 L 775,125 L 725,120 L 730,50 Z"/>
+                    <path id="state-MA" class="state-path" fill="#ddd" d="M 700,140 L 750,145 L 745,170 L 695,165 L 700,140 Z"/>
+                    <path id="state-RI" class="state-path" fill="#ddd" d="M 745,170 L 760,172 L 757,185 L 742,183 L 745,170 Z"/>
+                    <path id="state-CT" class="state-path" fill="#ddd" d="M 695,165 L 745,170 L 740,190 L 690,185 L 695,165 Z"/>
+                    <path id="state-NJ" class="state-path" fill="#ddd" d="M 675,270 L 700,275 L 695,310 L 670,305 L 675,270 Z"/>
+                    <path id="state-DE" class="state-path" fill="#ddd" d="M 700,275 L 715,277 L 712,295 L 697,293 L 700,275 Z"/>
+                    <path id="state-MD" class="state-path" fill="#ddd" d="M 670,305 L 715,310 L 710,340 L 665,335 L 670,305 Z"/>
                 </svg>
             </div>
             
@@ -469,8 +469,9 @@
 
 <script>
 (function() {
-    // Data definitions
-    window.DATA = {
+    try {
+        // Data definitions
+        window.DATA = {
         glPremiumPct: {
             AL: { min: 0.45, max: 0.85, midpoint: 0.65, range: "0.45% - 0.85%" },
             AK: { min: 0.55, max: 0.95, midpoint: 0.75, range: "0.55% - 0.95%" },
@@ -885,14 +886,41 @@
         window.updateInfoCard(null);
     }
     
-    var root = document.getElementById('insurance-map-container');
-    if (!root) return;
-    
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    // WordPress robust initialization with polling
+    function tryInit() {
+        if (window.mapInitialized) return;
+        var root = document.getElementById('insurance-map-container');
+        if (!root) return;  // Only return here, not earlier
         initializeMap();
-    } else {
-        document.addEventListener('DOMContentLoaded', initializeMap);
     }
-    window.addEventListener('load', initializeMap);
+    
+    // Try now if ready, otherwise wait
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', tryInit);
+    } else {
+        tryInit();
+    }
+    window.addEventListener('load', tryInit);
+    
+    // Poll for async content (WordPress often loads blocks later)
+    var initPoll = setInterval(function() {
+        if (window.mapInitialized) {
+            clearInterval(initPoll);
+            return;
+        }
+        tryInit();
+    }, 300);
+    
+    // Stop polling after 5 seconds
+    setTimeout(function() { 
+        clearInterval(initPoll); 
+    }, 5000);
+    
+    } catch (error) {
+        // Log error if console exists
+        if (typeof console !== 'undefined' && console.error) {
+            console.error('Map initialization error:', error);
+        }
+    }
 })();
 </script>

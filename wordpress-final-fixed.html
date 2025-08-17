@@ -571,17 +571,22 @@
         }
         tooltip.querySelector('.metric-value').textContent = formattedValue;
         
-        // Position tooltip near mouse cursor
+        // Position tooltip near center of state
+        var rect = event.target.getBoundingClientRect();
         var containerRect = document.querySelector('.map-wrapper').getBoundingClientRect();
         
-        // Use mouse coordinates for more natural positioning
-        var left = event.clientX - containerRect.left + 15;
-        var top = event.clientY - containerRect.top - 40;
+        // Position tooltip at center of state horizontally, slightly above vertically
+        var left = rect.left - containerRect.left + (rect.width / 2) - 110; // Center horizontally (110 is half of tooltip width)
+        var top = rect.top - containerRect.top + (rect.height / 2) - 40;
         
-        // Adjust if would go off screen
-        var tooltipWidth = 220;
-        if (left + tooltipWidth > containerRect.width) {
-            left = event.clientX - containerRect.left - tooltipWidth - 15;
+        // Adjust if would go off screen to the right
+        if (left + 220 > containerRect.width) {
+            left = containerRect.width - 230;
+        }
+        
+        // Adjust if would go off screen to the left
+        if (left < 10) {
+            left = 10;
         }
         
         // Keep tooltip within vertical bounds

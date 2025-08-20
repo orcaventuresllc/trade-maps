@@ -168,37 +168,6 @@
     margin: 0;
 }
 
-.wc-sub-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: -20px;
-    margin-bottom: 20px;
-}
-
-.wc-sub-btn {
-    padding: 8px 16px;
-    border: 2px solid #ddd;
-    background: white;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    color: #555;
-}
-
-.wc-sub-btn:hover {
-    background: #f5f5f5;
-    color: #555;
-    border-color: #999;
-}
-
-.wc-sub-btn.active {
-    background: #10b981;
-    color: white;
-    border-color: #10b981;
-}
 
 .info-card {
     background: white;
@@ -326,7 +295,7 @@
 
 <div id="insurance-map-container">
     <div class="map-header">
-        <h2>Carpenter Insurance Cost Metrics by State</h2>
+        <h2>Landscaping Insurance Cost Metrics by State</h2>
         <p class="map-subtitle">Explore insurance costs and savings opportunities across the United States</p>
     </div>
     
@@ -334,13 +303,9 @@
         <button class="metric-btn active" data-metric="glPremium">GL Premium % of Revenue</button>
         <button class="metric-btn" data-metric="glSavings">GL Savings %</button>
         <button class="metric-btn" data-metric="glCompetitiveness">GL Carrier Competitiveness</button>
-        <button class="metric-btn" data-metric="wcRate">WC Rate per $100</button>
+        <button class="metric-btn" data-metric="wcRate">WC Rate - 9102 (Lawncare)</button>
     </div>
     
-    <div class="wc-sub-buttons" id="wc-sub-buttons" style="display:none;">
-        <button class="wc-sub-btn active" data-wc-code="5437">Class 5437 (Interior)</button>
-        <button class="wc-sub-btn" data-wc-code="5645">Class 5645 (Framing)</button>
-    </div>
     
     <div class="legend-container">
         <span class="legend-label">Legend:</span>
@@ -449,79 +414,67 @@
     
     // GL Premium ranges for display
     var glPremiumRanges = {
-        AL: "0.5% - 1.4%", AK: "0.4% - 0.9%", AZ: "0.5% - 1.5%", AR: "0.4% - 1.3%", CA: "0.5% - 1.5%",
-        CO: "0.3% - 0.8%", CT: "0.4% - 1.3%", DE: "0.5% - 1.4%", FL: "0.4% - 1.3%", GA: "0.6% - 1.9%",
-        HI: "1.3% - 3.9%", ID: "0.5% - 1.3%", IL: "0.4% - 1.3%", IN: "0.3% - 0.9%", IA: "0.4% - 1.3%",
-        KS: "0.4% - 1.2%", KY: "0.3% - 1.0%", LA: "0.6% - 1.8%", ME: "0.4% - 1.1%", MD: "0.5% - 1.6%",
-        MA: "0.4% - 1.2%", MI: "0.4% - 1.2%", MN: "0.7% - 1.9%", MS: "0.6% - 1.8%", MO: "1.4% - 2.4%",
-        MT: "0.4% - 1.3%", NE: "0.8% - 2.4%", NV: "0.3% - 0.9%", NH: "0.5% - 1.3%", NJ: "0.3% - 0.9%",
-        NM: "0.4% - 1.1%", NY: "0.4% - 1.1%", NC: "1.3% - 1.9%", ND: "0.4% - 1.1%", OH: "0.6% - 1.7%",
-        OK: "0.5% - 2.1%", OR: "0.5% - 1.7%", PA: "0.7% - 2.1%", RI: "0.6% - 1.9%", SC: "0.4% - 1.4%",
-        SD: "0.4% - 1.3%", TN: "0.6% - 1.1%", TX: "0.5% - 1.1%", UT: "0.5% - 1.5%", VT: "0.4% - 1.0%",
-        VA: "0.3% - 0.7%", WA: "0.4% - 1.1%", WV: "0.5% - 1.5%", WI: "0.4% - 1.2%", WY: "0.4% - 1.2%"
+        AL: "0.40% - 1.10%", AK: "0.40% - 1.00%", AZ: "0.20% - 0.70%", AR: "0.20% - 0.70%", CA: "0.70% - 1.50%",
+        CO: "0.60% - 1.10%", CT: "0.80% - 1.80%", DE: "0.30% - 1.60%", FL: "0.50% - 1.10%", GA: "0.20% - 0.90%",
+        HI: "1.10% - 1.30%", ID: "0.40% - 0.80%", IL: "1.30% - 2.00%", IN: "0.60% - 1.00%", IA: "0.40% - 0.70%",
+        KS: "0.40% - 0.80%", KY: "0.20% - 0.80%", LA: "0.40% - 1.90%", ME: "0.50% - 0.90%", MD: "0.20% - 0.70%",
+        MA: "0.60% - 1.10%", MI: "0.60% - 0.90%", MN: "0.40% - 0.70%", MS: "0.40% - 1.40%", MO: "0.50% - 0.90%",
+        MT: "0.50% - 1.10%", NE: "0.40% - 0.90%", NV: "0.80% - 1.70%", NH: "0.60% - 1.30%", NJ: "0.60% - 2.30%",
+        NM: "0.50% - 1.10%", NY: "1.50% - 6.40%", NC: "0.20% - 0.80%", ND: "0.50% - 0.90%", OH: "0.30% - 0.70%",
+        OK: "0.40% - 0.80%", OR: "0.40% - 0.80%", PA: "0.60% - 1.70%", RI: "0.60% - 1.60%", SC: "0.30% - 1.10%",
+        SD: "0.60% - 1.10%", TN: "0.30% - 0.90%", TX: "0.20% - 0.90%", UT: "0.20% - 0.90%", VT: "0.20% - 0.70%",
+        VA: "0.20% - 0.70%", WA: "0.30% - 1.10%", WV: "0.40% - 1.30%", WI: "0.40% - 1.00%", WY: "0.40% - 0.70%"
     };
     
     // Complete state data for all 50 states
     var stateData = {
         glPremium: {
-            AL: 0.95, AK: 0.65, AZ: 1.0, AR: 0.85, CA: 1.0,
-            CO: 0.55, CT: 0.85, DE: 0.95, FL: 0.85, GA: 1.25,
-            HI: 2.6, ID: 0.9, IL: 0.85, IN: 0.6, IA: 0.85,
-            KS: 0.8, KY: 0.65, LA: 1.2, ME: 0.75, MD: 1.05,
-            MA: 0.8, MI: 0.8, MN: 1.3, MS: 1.2, MO: 1.9,
-            MT: 0.85, NE: 1.6, NV: 0.6, NH: 0.9, NJ: 0.6,
-            NM: 0.75, NY: 0.75, NC: 1.6, ND: 0.75, OH: 1.15,
-            OK: 1.3, OR: 1.1, PA: 1.4, RI: 1.25, SC: 0.9,
-            SD: 0.85, TN: 0.85, TX: 0.8, UT: 1.0, VT: 0.7,
-            VA: 0.5, WA: 0.75, WV: 1.0, WI: 0.8, WY: 0.8
+            AL: 0.75, AK: 0.70, AZ: 0.45, AR: 0.45, CA: 1.10,
+            CO: 0.85, CT: 1.30, DE: 0.95, FL: 0.80, GA: 0.55,
+            HI: 1.20, ID: 0.60, IL: 1.65, IN: 0.80, IA: 0.55,
+            KS: 0.60, KY: 0.50, LA: 1.15, ME: 0.70, MD: 0.45,
+            MA: 0.85, MI: 0.75, MN: 0.55, MS: 0.90, MO: 0.70,
+            MT: 0.80, NE: 0.65, NV: 1.25, NH: 0.95, NJ: 1.45,
+            NM: 0.80, NY: 3.95, NC: 0.50, ND: 0.70, OH: 0.50,
+            OK: 0.60, OR: 0.60, PA: 1.15, RI: 1.10, SC: 0.70,
+            SD: 0.85, TN: 0.60, TX: 0.55, UT: 0.55, VT: 0.45,
+            VA: 0.45, WA: 0.70, WV: 0.85, WI: 0.70, WY: 0.55
         },
         glSavings: {
-            AL: 27.7, AK: 35.9, AZ: 58.1, AR: 46.0, CA: 35.8,
-            CO: 55.6, CT: 46.9, DE: 32.0, FL: 29.5, GA: 47.3,
-            HI: 22.6, ID: 17.0, IL: 46.9, IN: 41.4, IA: 36.2,
-            KS: 44.4, KY: 65.2, LA: 69.7, ME: 45.5, MD: 33.9,
-            MA: 27.9, MI: 43.2, MN: 41.7, MS: 23.8, MO: 29.0,
-            MT: 42.2, NE: 29.3, NV: 60.0, NH: 17.6, NJ: 42.9,
-            NM: 57.8, NY: 28.9, NC: 13.0, ND: 43.9, OH: 47.8,
-            OK: 62.7, OR: 46.8, PA: 37.9, RI: 60.6, SC: 53.4,
-            SD: 54.2, TN: 22.7, TX: 21.2, UT: 35.8, VT: 34.4,
-            VA: 37.0, WA: 61.5, WV: 54.0, WI: 51.0, WY: 17.9
+            AL: 48.90, AK: 25.80, AZ: 64.30, AR: 66.70, CA: 46.40,
+            CO: 21.40, CT: 37.70, DE: 68.90, FL: 37.00, GA: 64.70,
+            HI: 13.80, ID: 25.80, IL: 20.50, IN: 21.40, IA: 26.70,
+            KS: 32.40, KY: 67.90, LA: 69.20, ME: 20.00, MD: 59.30,
+            MA: 17.80, MI: 18.90, MN: 32.30, MS: 56.10, MO: 24.30,
+            MT: 42.60, NE: 45.70, NV: 33.80, NH: 38.60, NJ: 63.00,
+            NM: 27.30, NY: 62.20, NC: 65.50, ND: 31.60, OH: 33.30,
+            OK: 24.20, OR: 34.50, PA: 45.10, RI: 39.70, SC: 65.90,
+            SD: 27.30, TN: 57.90, TX: 70.60, UT: 69.40, VT: 66.70,
+            VA: 54.20, WA: 43.90, WV: 45.80, WI: 24.40, WY: 30.00
         },
         glCompetitiveness: {
-            AL: 90, AK: 0, AZ: 20, AR: 50, CA: 10,
-            CO: 40, CT: 30, DE: 50, FL: 20, GA: 100,
-            HI: 0, ID: 50, IL: 40, IN: 50, IA: 10,
-            KS: 40, KY: 20, LA: 10, ME: 20, MD: 80,
-            MA: 50, MI: 50, MN: 80, MS: 50, MO: 50,
+            AL: 90, AK: 0, AZ: 80, AR: 80, CA: 10,
+            CO: 20, CT: 20, DE: 80, FL: 60, GA: 100,
+            HI: 0, ID: 20, IL: 20, IN: 20, IA: 20,
+            KS: 20, KY: 70, LA: 70, ME: 20, MD: 80,
+            MA: 20, MI: 20, MN: 60, MS: 20, MO: 20,
             MT: 20, NE: 20, NV: 10, NH: 20, NJ: 80,
-            NM: 50, NY: 0, NC: 40, ND: 30, OH: 80,
-            OK: 70, OR: 70, PA: 70, RI: 40, SC: 90,
-            SD: 50, TN: 100, TX: 90, UT: 80, VT: 10,
-            VA: 100, WA: 20, WV: 30, WI: 70, WY: 30
+            NM: 70, NY: 0, NC: 60, ND: 20, OH: 60,
+            OK: 20, OR: 70, PA: 70, RI: 60, SC: 90,
+            SD: 70, TN: 90, TX: 100, UT: 90, VT: 10,
+            VA: 80, WA: 10, WV: 10, WI: 10, WY: 10
         },
-        wcRate5437: {
-            AL: 6.14, AK: 6.16, AZ: 4.05, AR: 3.26, CA: 5.62,
-            CO: 4.74, CT: 7.86, DE: 5.00, FL: 6.23, GA: 8.98,
-            HI: 6.03, ID: 6.58, IL: 9.75, IN: 2.83, IA: 5.71,
-            KS: 4.55, KY: 3.87, LA: 9.60, ME: 6.61, MD: 5.50,
-            MA: 4.19, MI: 5.66, MN: 11.75, MS: 6.14, MO: 5.96,
-            MT: 6.91, NE: 4.91, NV: 4.80, NH: 6.79, NJ: 11.44,
-            NM: 5.93, NY: 9.50, NC: 5.48, ND: 3.73, OH: 3.32,
-            OK: 6.37, OR: 2.50, PA: 7.06, RI: 8.14, SC: 8.26,
-            SD: 5.71, TN: 3.93, TX: 3.55, UT: 4.39, VT: 7.55,
-            VA: 5.46, WA: 4.67, WV: 2.74, WI: 10.03, WY: 3.48
-        },
-        wcRate5645: {
-            AL: 14.07, AK: 9.78, AZ: 10.17, AR: 6.33, CA: 8.46,
-            CO: 7.40, CT: 17.17, DE: 9.06, FL: 12.61, GA: 43.42,
-            HI: 10.60, ID: 12.93, IL: 19.23, IN: 5.56, IA: 9.65,
-            KS: 10.53, KY: 9.81, LA: 17.76, ME: 10.58, MD: 7.23,
-            MA: 6.93, MI: 10.27, MN: 11.44, MS: 9.19, MO: 12.48,
-            MT: 9.85, NE: 9.15, NV: 7.89, NH: 9.54, NJ: 17.09,
-            NM: 12.78, NY: 11.47, NC: 16.73, ND: 3.51, OH: 4.59,
-            OK: 13.80, OR: 6.70, PA: 9.50, RI: 9.03, SC: 21.48,
-            SD: 10.29, TN: 12.84, TX: 4.39, UT: 9.90, VT: 11.50,
-            VA: 9.73, WA: 8.20, WV: 5.72, WI: 13.07, WY: 4.31
+        wcRate: {
+            AL: 2.84, AK: 3.69, AZ: 1.90, AR: 1.52, CA: 0.01,
+            CO: 2.03, CT: 3.29, DE: 3.53, FL: 3.62, GA: 3.86,
+            HI: 0.01, ID: 3.91, IL: 3.34, IN: 2.38, IA: 3.56,
+            KS: 2.45, KY: 1.91, LA: 4.08, ME: 4.29, MD: 2.26,
+            MA: 2.20, MI: 2.48, MN: 3.71, MS: 2.87, MO: 3.66,
+            MT: 4.02, NE: 3.33, NV: 3.08, NH: 3.60, NJ: 5.22,
+            NM: 2.85, NY: 3.99, NC: 3.20, ND: 1.45, OH: 2.54,
+            OK: 2.77, OR: 1.69, PA: 2.02, RI: 4.06, SC: 3.12,
+            SD: 2.80, TN: 2.24, TX: 1.95, UT: 2.12, VT: 4.20,
+            VA: 2.31, WA: 2.33, WV: 1.45, WI: 2.70, WY: 3.04
         }
     };
     
@@ -540,16 +493,11 @@
     };
     
     var currentMetric = 'glPremium';
-    var currentWCCode = '5437';
     var selectedState = null;
     
     // Update colors
     function updateColors() {
-        // Handle WC Rate which has two sub-options
         var metricKey = currentMetric;
-        if (currentMetric === 'wcRate') {
-            metricKey = 'wcRate' + currentWCCode;
-        }
         
         var data = stateData[metricKey];
         if (!data) return;
@@ -603,9 +551,6 @@
             
             // Get metric data
             var metricKey = currentMetric;
-            if (currentMetric === 'wcRate') {
-                metricKey = 'wcRate' + currentWCCode;
-            }
             
             var value = stateData[metricKey] ? stateData[metricKey][stateCode] : undefined;
             
@@ -750,9 +695,6 @@
             
             // Get the correct data based on metric
             var metricKey = currentMetric;
-            if (currentMetric === 'wcRate') {
-                metricKey = 'wcRate' + currentWCCode;
-            }
             
             var value = stateData[metricKey][stateCode];
             if (value !== undefined) {
@@ -818,13 +760,6 @@
         }
         target.classList.add('active');
         
-        // Show/hide WC sub-buttons
-        var wcButtons = document.getElementById('wc-sub-buttons');
-        if (metric === 'wcRate') {
-            wcButtons.style.display = 'flex';
-        } else {
-            wcButtons.style.display = 'none';
-        }
         
         // Update metric and colors
         currentMetric = metric;
@@ -836,30 +771,6 @@
         }
     }
     
-    // Handle WC sub-button click
-    function handleWCClick(event) {
-        var target = event.target;
-        
-        if (!target.classList || !target.classList.contains('wc-sub-btn')) {
-            return;
-        }
-        
-        var code = target.getAttribute('data-wc-code');
-        
-        // Update active button
-        var buttons = document.querySelectorAll('.wc-sub-btn');
-        for (var i = 0; i < buttons.length; i++) {
-            buttons[i].classList.remove('active');
-        }
-        target.classList.add('active');
-        
-        currentWCCode = code;
-        updateColors();
-        
-        if (selectedState) {
-            updateInfo(selectedState);
-        }
-    }
     
     // Populate mobile dropdown with all states
     function populateDropdown() {
@@ -927,11 +838,6 @@
                 buttonContainer.addEventListener('click', handleMetricClick);
             }
             
-            // Add click listener to WC sub-buttons
-            var wcContainer = document.getElementById('wc-sub-buttons');
-            if (wcContainer) {
-                wcContainer.addEventListener('click', handleWCClick);
-            }
             
             // Initialize mobile dropdown
             populateDropdown();

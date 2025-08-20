@@ -126,14 +126,40 @@
 
 .legend-gradient {
     width: 200px;
-    height: 12px;
-    background: linear-gradient(to right, #e5f3ff, #003366);
-    border-radius: 6px;
+    height: 20px;
+    background: linear-gradient(to right, #e5f3ff, #0066cc);
+    border-radius: 4px;
+    border: 1px solid #ddd;
 }
 
 .legend-min, .legend-max {
     font-size: 12px;
     color: #888;
+}
+
+/* Mobile Dropdown Styles */
+.mobile-selector {
+    display: none;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.mobile-selector label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #555;
+}
+
+#state-dropdown {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    cursor: pointer;
 }
 
 .map-subtitle {
@@ -263,6 +289,39 @@
     position: absolute !important;
     left: -9999px !important;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .map-header h2 {
+        font-size: 24px;
+    }
+    
+    .metric-toggles {
+        gap: 8px;
+    }
+    
+    .metric-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+    
+    .map-wrapper {
+        display: none;
+    }
+    
+    .mobile-selector {
+        display: block;
+    }
+    
+    .info-card {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .state-name {
+        font-size: 20px;
+    }
+}
 </style>
 
 <div id="insurance-map-container">
@@ -290,10 +349,26 @@
         <span class="legend-max">High</span>
     </div>
     
+    <!-- Mobile Dropdown (hidden on desktop) -->
+    <div class="mobile-selector">
+        <label for="state-dropdown">Select a state:</label>
+        <select id="state-dropdown">
+            <option value="">Choose a state...</option>
+            <!-- Options will be populated by JavaScript -->
+        </select>
+    </div>
+    
     <div class="map-content-container">
         <div class="map-wrapper">
             <div id="map-svg-container">
                 <!-- SVG will be copied here by JavaScript -->
+            </div>
+            
+            <!-- Tooltip for hover functionality -->
+            <div id="map-tooltip" style="position: absolute; display: none; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; pointer-events: none; min-width: 200px;">
+                <div class="state-name" style="font-weight: 600; color: #1a1a1a; margin-bottom: 4px;"></div>
+                <div class="metric-label" style="font-size: 12px; color: #666; margin-bottom: 2px;"></div>
+                <div class="metric-value" style="font-size: 24px; font-weight: 700; color: #2563eb;"></div>
             </div>
         </div>
         
@@ -516,8 +591,7 @@
         }
     }
     
-    // TOOLTIP FUNCTIONS DISABLED TO FIX MAP
-    /*
+    // TOOLTIP FUNCTIONS - Now Enabled with Fixed Positioning
     // Show tooltip on hover with error handling
     function showTooltip(event, stateCode) {
         try {
@@ -578,20 +652,19 @@
                 metricValueEl.textContent = formattedValue;
             }
             
-            // Position tooltip near state
-            var rect = event.target.getBoundingClientRect();
+            // Position tooltip near cursor
             var wrapper = document.querySelector('.map-wrapper');
             if (!wrapper) return;
             
             var containerRect = wrapper.getBoundingClientRect();
             
-            // Position next to state
-            var left = rect.right - containerRect.left + 10;
-            var top = rect.top - containerRect.top + (rect.height / 2) - 40;
+            // Position relative to cursor position
+            var left = event.clientX - containerRect.left + 15;
+            var top = event.clientY - containerRect.top - 10;
             
             // Adjust if would go off screen
             if (left + 220 > containerRect.width) {
-                left = rect.left - containerRect.left - 230;
+                left = event.clientX - containerRect.left - 235;
             }
             
             if (left < 10) left = 10;
@@ -633,7 +706,6 @@
             // Silently fail
         }
     }
-    */
     
     // Handle state click
     function handleStateClick(event) {
@@ -789,6 +861,40 @@
         }
     }
     
+    // Populate mobile dropdown with all states
+    function populateDropdown() {
+        var dropdown = document.getElementById('state-dropdown');
+        if (!dropdown) return;
+        
+        // Sort states alphabetically
+        var sortedStates = [];
+        for (var code in stateNames) {
+            if (stateNames.hasOwnProperty(code)) {
+                sortedStates.push([code, stateNames[code]]);
+            }
+        }
+        sortedStates.sort(function(a, b) {
+            return a[1].localeCompare(b[1]);
+        });
+        
+        // Add each state as an option
+        for (var i = 0; i < sortedStates.length; i++) {
+            var option = document.createElement('option');
+            option.value = sortedStates[i][0];
+            option.textContent = sortedStates[i][1];
+            dropdown.appendChild(option);
+        }
+    }
+    
+    // Handle mobile dropdown selection
+    function handleDropdownChange(event) {
+        var stateCode = event.target.value;
+        if (stateCode) {
+            selectedState = stateCode;
+            updateInfo(stateCode);
+        }
+    }
+    
     // Initialize everything
     function init() {
         try {
@@ -811,6 +917,10 @@
             // Add click listener to map container (event delegation)
             container.addEventListener('click', handleStateClick);
             
+            // Add hover listeners for tooltips
+            container.addEventListener('mouseover', handleStateHover);
+            container.addEventListener('mouseout', hideTooltip);
+            
             // Add click listener to buttons container (event delegation)
             var buttonContainer = document.querySelector('.metric-toggles');
             if (buttonContainer) {
@@ -821,6 +931,13 @@
             var wcContainer = document.getElementById('wc-sub-buttons');
             if (wcContainer) {
                 wcContainer.addEventListener('click', handleWCClick);
+            }
+            
+            // Initialize mobile dropdown
+            populateDropdown();
+            var dropdown = document.getElementById('state-dropdown');
+            if (dropdown) {
+                dropdown.addEventListener('change', handleDropdownChange);
             }
             
             // Initial color update

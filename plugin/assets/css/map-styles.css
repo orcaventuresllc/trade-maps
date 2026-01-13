@@ -1,0 +1,378 @@
+/**
+ * Insurance Cost Maps - Styles
+ * Interactive US maps displaying insurance cost metrics
+ */
+
+#insurance-map-container {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.map-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.map-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.metric-toggles {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.metric-btn {
+    padding: 10px 20px;
+    border: 2px solid #ddd;
+    background: white;
+    color: #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.metric-btn:hover {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.metric-btn.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.map-content-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.map-wrapper {
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 400px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    flex: 1;
+}
+
+#map-svg-container svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* State path styles */
+.state-path {
+    stroke: #fff;
+    stroke-width: 0.5;
+    cursor: pointer;
+    transition: all 0.2s;
+    fill: #e5e7eb;
+}
+
+.state-path:hover {
+    stroke: #333;
+    stroke-width: 1.5;
+}
+
+.state-path.selected {
+    stroke: #dc2626 !important;
+    stroke-width: 2 !important;
+    fill: #fca5a5 !important;
+}
+
+/* BLUE Heat colors from original */
+.heat-0 { fill: #e5f3ff; }
+.heat-1 { fill: #b3d9ff; }
+.heat-2 { fill: #80bfff; }
+.heat-3 { fill: #4da6ff; }
+.heat-4 { fill: #1a8cff; }
+.heat-5 { fill: #0066cc; }
+.heat-6 { fill: #004c99; }
+.heat-7 { fill: #003366; }
+
+.legend-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.legend-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.legend-gradient {
+    width: 200px;
+    height: 20px;
+    background: linear-gradient(to right, #e5f3ff, #0066cc);
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.legend-min, .legend-max {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Mobile Dropdown Styles */
+.mobile-selector {
+    display: none;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.mobile-selector label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: #555;
+}
+
+#state-dropdown {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    background: white;
+    cursor: pointer;
+}
+
+.map-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+.wc-sub-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: -20px;
+    margin-bottom: 20px;
+}
+
+.wc-sub-btn {
+    padding: 8px 16px;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: #555;
+}
+
+.wc-sub-btn:hover {
+    background: #f5f5f5;
+    color: #555;
+    border-color: #999;
+}
+
+.wc-sub-btn.active {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    width: 320px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    text-align: center;
+}
+
+.state-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 10px;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2563eb;
+    margin: 10px 0;
+}
+
+.metric-description {
+    font-size: 14px;
+    color: #666;
+    margin: 10px 0 20px 0;
+    line-height: 1.5;
+}
+
+.cta-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: background 0.3s ease;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.cta-link:hover {
+    background: #1d4ed8;
+    color: white;
+}
+
+/* Hover tooltip */
+.info-box-hover {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    pointer-events: none;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.info-box-hover .state-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.info-box-hover .metric-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.info-box-hover .metric-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+/* Hide the source SVG */
+#hidden-svg-source {
+    display: none !important;
+    visibility: hidden !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+/* SEO Data Table Styles */
+.insurance-data-table-section {
+    max-width: 1160px;
+    margin: 40px auto 0;
+    padding: 0 20px;
+}
+
+.insurance-data-table-section h3 {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.insurance-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.insurance-data-table th,
+.insurance-data-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.insurance-data-table th {
+    background-color: #2563eb;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.insurance-data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.insurance-data-table tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.insurance-data-table tr:hover {
+    background-color: #f0f4ff;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .map-header h2 {
+        font-size: 24px;
+    }
+
+    .metric-toggles {
+        gap: 8px;
+    }
+
+    .metric-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
+
+    .map-wrapper {
+        display: none;
+    }
+
+    .mobile-selector {
+        display: block;
+    }
+
+    .info-card {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .state-name {
+        font-size: 20px;
+    }
+
+    .insurance-data-table {
+        font-size: 12px;
+    }
+
+    .insurance-data-table th,
+    .insurance-data-table td {
+        padding: 8px 6px;
+    }
+}

@@ -268,4 +268,45 @@ class Insurance_Maps_Data_Manager {
     public function trade_has_data($trade) {
         return $this->get_trade_state_count($trade) > 0;
     }
+
+    /**
+     * Export trade data to CSV format
+     * Generates downloadable CSV file from database
+     *
+     * @param string $trade Trade name
+     * @return string|WP_Error CSV content or error
+     */
+    public function export_trade_to_csv($trade) {
+        $data = $this->get_trade_data($trade);
+
+        if (empty($data)) {
+            return new WP_Error('no_data', 'No data available for this trade');
+        }
+
+        // Create CSV in memory (php://temp is more efficient than php://output for this)
+        $output = fopen('php://temp', 'r+');
+
+        // Write header row (must match import format exactly)
+        fputcsv($output, array('State', 'GL_Premium_Low', 'GL_Premium_High', 'GL_Savings', 'GL_Competitiveness', 'WC_Rate_5437', 'WC_Rate_5645'));
+
+        // Write data rows
+        foreach ($data as $row) {
+            fputcsv($output, array(
+                $row['state_code'],
+                $row['gl_premium_low'],
+                $row['gl_premium_high'],
+                $row['gl_savings'],
+                $row['gl_competitiveness'],
+                $row['wc_rate_5437'],
+                $row['wc_rate_5645']
+            ));
+        }
+
+        // Get CSV content
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        return $csv;
+    }
 }

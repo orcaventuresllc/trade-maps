@@ -97,6 +97,15 @@ function insurance_maps_admin_page() {
                                 </td>
                                 <td>
                                     <a href="<?php echo esc_url(wp_nonce_url(
+                                        admin_url('admin-post.php?action=insurance_maps_export_csv&trade=' . urlencode($trade)),
+                                        'export_trade_' . $trade
+                                    )); ?>"
+                                       class="button button-small"
+                                       title="Download current data as CSV">
+                                        <span class="dashicons dashicons-download" style="font-size: 14px; vertical-align: middle; margin-top: -2px;"></span>
+                                        Download CSV
+                                    </a>
+                                    <a href="<?php echo esc_url(wp_nonce_url(
                                         admin_url('admin-post.php?action=insurance_maps_delete&trade=' . urlencode($trade)),
                                         'delete_trade_' . $trade
                                     )); ?>"

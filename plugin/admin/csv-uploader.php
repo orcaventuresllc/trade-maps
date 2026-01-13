@@ -132,6 +132,41 @@ function insurance_maps_handle_delete() {
     exit;
 }
 
+// Handle CSV export/download
+add_action('admin_post_insurance_maps_export_csv', 'insurance_maps_handle_csv_export');
+function insurance_maps_handle_csv_export() {
+    // Security checks
+    if (!current_user_can('manage_options')) {
+        wp_die('Unauthorized access');
+    }
+
+    if (!isset($_GET['trade'])) {
+        wp_die('Missing trade parameter');
+    }
+
+    $trade = sanitize_text_field($_GET['trade']);
+    check_admin_referer('export_trade_' . $trade);
+
+    // Get CSV data
+    $data_manager = new Insurance_Maps_Data_Manager();
+    $csv = $data_manager->export_trade_to_csv($trade);
+
+    if (is_wp_error($csv)) {
+        wp_redirect(add_query_arg('message', 'export_error', admin_url('admin.php?page=insurance-maps')));
+        exit;
+    }
+
+    // Send CSV file to browser
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . sanitize_file_name($trade) . '-insurance-data.csv"');
+    header('Content-Length: ' . strlen($csv));
+    header('Pragma: no-cache');
+    header('Expires: 0');
+
+    echo $csv;
+    exit;
+}
+
 // Display admin notices
 add_action('admin_notices', 'insurance_maps_admin_notices');
 function insurance_maps_admin_notices() {
@@ -208,6 +243,11 @@ function insurance_maps_admin_notices() {
         case 'delete_error':
             $class = 'notice notice-error is-dismissible';
             $text = '<strong>Delete Error:</strong> Failed to delete trade data. Please try again.';
+            break;
+
+        case 'export_error':
+            $class = 'notice notice-error is-dismissible';
+            $text = '<strong>Export Error:</strong> Failed to export data. The trade may not have any data uploaded yet.';
             break;
 
         default:

@@ -4,6 +4,11 @@
  * Creates admin menu and page for managing insurance cost data
  */
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 // Add admin menu
 add_action('admin_menu', 'insurance_maps_add_admin_menu');
 function insurance_maps_add_admin_menu() {

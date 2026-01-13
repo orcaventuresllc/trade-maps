@@ -94,3 +94,15 @@ function insurance_maps_enqueue_assets() {
         );
     }
 }
+
+/**
+ * Add security headers to admin pages
+ */
+add_action('admin_init', 'insurance_maps_security_headers');
+function insurance_maps_security_headers() {
+    if (is_admin() && isset($_GET['page']) && $_GET['page'] === 'insurance-maps') {
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+        header('X-XSS-Protection: 1; mode=block');
+    }
+}

@@ -4,6 +4,25 @@
  * Processes CSV file uploads and manages trade data
  */
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Rate limiting function
+function insurance_maps_check_upload_rate_limit() {
+    $transient_key = 'insurance_maps_upload_' . get_current_user_id();
+    $uploads = get_transient($transient_key);
+
+    // Allow 10 uploads per hour
+    if ($uploads && $uploads >= 10) {
+        return new WP_Error('rate_limit', 'Too many uploads. Please wait before uploading again.');
+    }
+
+    set_transient($transient_key, ($uploads ? $uploads + 1 : 1), HOUR_IN_SECONDS);
+    return true;
+}
+
 // Handle CSV upload
 add_action('admin_post_insurance_maps_upload_csv', 'insurance_maps_handle_csv_upload');
 function insurance_maps_handle_csv_upload() {
@@ -30,10 +49,24 @@ function insurance_maps_handle_csv_upload() {
 
     $file = $_FILES['csv_file'];
 
-    // Validate file type
-    $file_ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    // Sanitize filename
+    $filename = sanitize_file_name($file['name']);
+
+    // Validate file extension
+    $file_ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     if ($file_ext !== 'csv') {
         wp_redirect(add_query_arg('message', 'invalid_file', wp_get_referer()));
+        exit;
+    }
+
+    // Validate MIME type
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+
+    $allowed_mimes = array('text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel');
+    if (!in_array($mime, $allowed_mimes, true)) {
+        wp_redirect(add_query_arg('message', 'invalid_mime', wp_get_referer()));
         exit;
     }
 
@@ -41,6 +74,13 @@ function insurance_maps_handle_csv_upload() {
     $max_size = 5 * 1024 * 1024; // 5MB in bytes
     if ($file['size'] > $max_size) {
         wp_redirect(add_query_arg('message', 'file_too_large', wp_get_referer()));
+        exit;
+    }
+
+    // Rate limiting check
+    $rate_check = insurance_maps_check_upload_rate_limit();
+    if (is_wp_error($rate_check)) {
+        wp_redirect(add_query_arg('message', 'rate_limit', wp_get_referer()));
         exit;
     }
 
@@ -137,6 +177,16 @@ function insurance_maps_admin_notices() {
         case 'invalid_file':
             $class = 'notice notice-error is-dismissible';
             $text = '<strong>Invalid File:</strong> Please upload a CSV file (.csv extension).';
+            break;
+
+        case 'invalid_mime':
+            $class = 'notice notice-error is-dismissible';
+            $text = '<strong>Invalid File Type:</strong> File must be a valid CSV format.';
+            break;
+
+        case 'rate_limit':
+            $class = 'notice notice-error is-dismissible';
+            $text = '<strong>Rate Limit Exceeded:</strong> Too many uploads. Please wait an hour before uploading again.';
             break;
 
         case 'file_too_large':

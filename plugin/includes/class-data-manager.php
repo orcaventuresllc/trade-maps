@@ -4,12 +4,75 @@
  * Handles all database operations for insurance cost data
  */
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Insurance_Maps_Data_Manager {
     private $table_name;
 
     public function __construct() {
         global $wpdb;
         $this->table_name = $wpdb->prefix . 'insurance_map_data';
+    }
+
+    /**
+     * Validate CSV row data
+     *
+     * @param array $row CSV row data
+     * @return bool|WP_Error True if valid, WP_Error otherwise
+     */
+    private function validate_csv_row($row, $line_number) {
+        // Check we have 7 columns
+        if (count($row) !== 7) {
+            return new WP_Error('invalid_columns', sprintf('Line %d: Expected 7 columns, found %d', $line_number, count($row)));
+        }
+
+        // Validate state code (2 uppercase letters)
+        $state_code = strtoupper(trim($row[0]));
+        if (!preg_match('/^[A-Z]{2}$/', $state_code)) {
+            return new WP_Error('invalid_state', sprintf('Line %d: Invalid state code "%s"', $line_number, $row[0]));
+        }
+
+        // Validate numeric values are actually numeric
+        for ($i = 1; $i <= 6; $i++) {
+            if (!is_numeric($row[$i])) {
+                return new WP_Error('invalid_number', sprintf('Line %d: Column %d must be numeric', $line_number, $i + 1));
+            }
+        }
+
+        // Validate GL Premium ranges (0-100%)
+        $gl_low = floatval($row[1]);
+        $gl_high = floatval($row[2]);
+        if ($gl_low < 0 || $gl_low > 100 || $gl_high < 0 || $gl_high > 100) {
+            return new WP_Error('invalid_range', sprintf('Line %d: GL Premium values must be between 0 and 100', $line_number));
+        }
+
+        if ($gl_low > $gl_high) {
+            return new WP_Error('invalid_range', sprintf('Line %d: GL Premium Low cannot be greater than High', $line_number));
+        }
+
+        // Validate GL Savings (0-100%)
+        $gl_savings = floatval($row[3]);
+        if ($gl_savings < 0 || $gl_savings > 100) {
+            return new WP_Error('invalid_range', sprintf('Line %d: GL Savings must be between 0 and 100', $line_number));
+        }
+
+        // Validate GL Competitiveness (0-100)
+        $gl_comp = intval($row[4]);
+        if ($gl_comp < 0 || $gl_comp > 100) {
+            return new WP_Error('invalid_range', sprintf('Line %d: GL Competitiveness must be between 0 and 100', $line_number));
+        }
+
+        // Validate WC Rates (0-1000) - reasonable upper limit
+        $wc_5437 = floatval($row[5]);
+        $wc_5645 = floatval($row[6]);
+        if ($wc_5437 < 0 || $wc_5437 > 1000 || $wc_5645 < 0 || $wc_5645 > 1000) {
+            return new WP_Error('invalid_range', sprintf('Line %d: WC Rates must be between 0 and 1000', $line_number));
+        }
+
+        return true;
     }
 
     /**
@@ -41,6 +104,7 @@ class Insurance_Maps_Data_Manager {
         }
 
         $imported = 0;
+        $line_number = 2; // Start at 2 (header is line 1)
 
         // Begin transaction for performance
         $wpdb->query('START TRANSACTION');
@@ -49,7 +113,16 @@ class Insurance_Maps_Data_Manager {
             while (($row = fgetcsv($file)) !== false) {
                 // Skip empty rows
                 if (empty($row[0])) {
+                    $line_number++;
                     continue;
+                }
+
+                // Validate row data
+                $validation = $this->validate_csv_row($row, $line_number);
+                if (is_wp_error($validation)) {
+                    $wpdb->query('ROLLBACK');
+                    fclose($file);
+                    return $validation;
                 }
 
                 $data = array(
@@ -66,6 +139,7 @@ class Insurance_Maps_Data_Manager {
                 // Insert or update (upsert)
                 $wpdb->replace($this->table_name, $data);
                 $imported++;
+                $line_number++;
             }
 
             $wpdb->query('COMMIT');

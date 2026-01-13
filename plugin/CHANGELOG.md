@@ -1,0 +1,150 @@
+# Changelog
+
+All notable changes to the Insurance Cost Maps plugin will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.0.0] - 2026-01-13
+
+### Added
+- Initial plugin release
+- WordPress admin interface for CSV data management
+- CSV upload functionality with drag-and-drop support
+- Interactive US maps for all 50 states
+- Database-driven architecture (wp_insurance_map_data table)
+- Shortcode system: `[insurance_map trade="carpenter"]`
+- Support for multiple trades (carpenter, electrician, plumber, hvac, gc, landscaping, painter)
+- Four insurance metrics:
+  - GL Premium % of Revenue (with range display)
+  - GL Savings %
+  - GL Carrier Competitiveness
+  - WC Rate per $100 (with Class 5437/5645 sub-categories)
+- Heat map visualization with blue gradient (8 levels)
+- Mobile responsive design with dropdown selector
+- Side-by-side layout (map + info panel)
+- CTA button with dynamic state-specific links
+- Admin features:
+  - Upload CSV files
+  - View all existing trades
+  - One-click shortcode copying
+  - Delete trade data
+  - State count display (X/50)
+  - Built-in help and CSV template
+
+### SEO Features
+- Crawlable HTML data tables for each trade
+- Schema.org structured data (JSON-LD Dataset markup)
+- Semantic HTML structure
+- Proper heading hierarchy
+- Alt text and aria labels
+
+### Security
+- SQL injection protection via `$wpdb->prepare()` prepared statements
+- XSS prevention via comprehensive output escaping
+- CSRF protection via WordPress nonces
+- File upload validation:
+  - Extension validation (.csv only)
+  - MIME type validation (text/csv, text/plain, application/csv)
+  - File size limits (5MB maximum)
+  - Filename sanitization
+- CSV content validation:
+  - State code validation (2 uppercase letters)
+  - Numeric range validation
+  - Column count validation
+  - Data integrity checks
+- Access control:
+  - Capability checks (`manage_options` required)
+  - Direct file access prevention (ABSPATH checks)
+  - Admin-only functionality
+- Rate limiting: 10 uploads per hour per user
+- Security headers:
+  - X-Content-Type-Options: nosniff
+  - X-Frame-Options: SAMEORIGIN
+  - X-XSS-Protection: 1; mode=block
+
+### Technical
+- ES5 JavaScript for maximum compatibility (no arrow functions, const/let, template literals)
+- WordPress KSES compatible (no inline event handlers)
+- Event delegation for all interactive elements
+- Hidden SVG source cloned to container (WordPress safe)
+- Database transactions for bulk imports
+- Unique constraints prevent duplicate data
+- Auto-update timestamps
+- Conditional asset loading (only on pages with shortcode)
+
+### Documentation
+- Comprehensive README.md with usage instructions
+- SECURITY.md with security policy and best practices
+- INSTALL.md with step-by-step installation guide
+- USER-GUIDE.md with complete user documentation
+- CONTRIBUTING.md with development guidelines
+- Inline code documentation
+- CSV template examples
+- Admin page help sections
+
+### Browser Support
+- Chrome (latest)
+- Safari (latest)
+- Firefox (latest)
+- Edge (latest)
+- Mobile browsers (iOS Safari, Chrome Mobile)
+- IE11 (with polyfills)
+
+### WordPress Compatibility
+- WordPress 5.0+
+- PHP 7.0+
+- MySQL 5.6+
+- Kadence theme tested
+- Gutenberg block editor compatible
+- Classic editor compatible
+
+## [Unreleased]
+
+### Planned Features
+- Bulk CSV upload for multiple trades
+- Export data back to CSV
+- Admin settings page for customization
+- Map color scheme options
+- Custom CTA URL per trade
+- Historical data comparison
+- Gutenberg block (in addition to shortcode)
+- REST API endpoints
+
+## Migration from HTML Files
+
+### Legacy Approach (August 2025)
+- Used 8 separate HTML files (final-*.html)
+- Data hard-coded in JavaScript
+- Manual copy-paste into WordPress
+- ~7,200 lines of duplicate code
+- Required editing 8 files for any change
+
+### Plugin Approach (January 2026)
+- Single WordPress plugin
+- CSV data management
+- Database-driven
+- No code duplication
+- Update via CSV upload only
+
+### Migration Path
+1. Install plugin
+2. Extract data using `extract-csv-data.py`
+3. Upload CSV files via admin
+4. Replace HTML in pages with shortcodes
+5. Archive old HTML files
+
+## Version History
+
+- **1.0.0** (2026-01-13): Initial release with full feature set
+
+---
+
+## Notes
+
+- **Breaking Changes**: None (initial release)
+- **Deprecations**: None
+- **Security Fixes**: None (initial secure release)
+- **Bug Fixes**: None (initial release)
+
+For detailed commit history, see: https://github.com/orcaventuresllc/trade-maps/commits/master

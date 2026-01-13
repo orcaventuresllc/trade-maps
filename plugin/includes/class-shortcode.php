@@ -4,6 +4,11 @@
  * Registers and processes the [insurance_map] shortcode
  */
 
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 class Insurance_Maps_Shortcode {
     private $data_manager;
 

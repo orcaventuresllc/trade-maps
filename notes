@@ -1,0 +1,13 @@
+ I found the issue! The GL Premium ranges are already correctly updated with your new data, but there's a section in the JavaScript where │ │
+│ │  the range display is temporarily disabled.                                                                                              │ │
+│ │                                                                                                                                          │ │
+│ │ Plan:                                                                                                                                    │ │
+│ │ 1. Enable range display for GL Premium tab: Remove the "TEMPORARILY DISABLED" line and uncomment the code that shows                     │ │
+│ │ glPremiumRanges[stateCode] instead of value + '%'                                                                                        │ │
+│ │ 2. Verify the change works: The glPremiumRanges object is already updated with your new data (like California: "1.6% - 3.0%", Louisiana: │ │
+│ │  "3.1% - 6.5%", etc.)                                                                                                                    │ │
+│ │                                                                                                                                          │ │
+│ │ This is a simple one-line change that will make the GL Premium tab display the full ranges (e.g., "1.6% - 3.0%") instead of the averaged │ │
+│ │  single values (e.g., "2.3%") when users click on states.                                                                                │ │
+│ │                                                                                                                                          │ │
+│ │ The ranges will show both the low and high end premium percentages from your data, exactly as requested. 

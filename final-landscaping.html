@@ -505,7 +505,7 @@
         // Get all state elements
         var states = document.querySelectorAll('.state-path');
         
-        // Calculate min/max
+        // Calculate percentile-based scaling for better color distribution
         var values = [];
         for (var key in data) {
             if (data.hasOwnProperty(key)) {
@@ -515,8 +515,18 @@
         
         if (values.length === 0) return;
         
-        var min = Math.min.apply(null, values);
-        var max = Math.max.apply(null, values);
+        // Sort values for percentile calculation
+        values.sort(function(a, b) { return a - b; });
+        
+        var min = values[0];
+        var max = values[values.length - 1];
+        
+        // Calculate percentiles for better color distribution
+        var p20 = values[Math.floor(values.length * 0.20)];
+        var p40 = values[Math.floor(values.length * 0.40)];
+        var p60 = values[Math.floor(values.length * 0.60)];
+        var p80 = values[Math.floor(values.length * 0.80)];
+        var p90 = values[Math.floor(values.length * 0.90)];
         
         // Update each state
         for (var i = 0; i < states.length; i++) {
@@ -529,10 +539,18 @@
                 state.classList.remove('heat-' + j);
             }
             
-            // Add new heat class
+            // Add new heat class using percentile-based scaling
             if (value !== undefined) {
-                var normalized = (value - min) / (max - min);
-                var heat = Math.floor(normalized * 8);
+                var heat = 0;
+                if (value >= p90) heat = 7;
+                else if (value >= p80) heat = 6;
+                else if (value >= p60) heat = 5;
+                else if (value >= p40) heat = 4;
+                else if (value >= p20) heat = 3;
+                else if (value >= min + (p20 - min) * 0.6) heat = 2;
+                else if (value >= min + (p20 - min) * 0.3) heat = 1;
+                else heat = 0;
+                
                 heat = Math.min(7, Math.max(0, heat));
                 state.classList.add('heat-' + heat);
             }
@@ -699,8 +717,7 @@
             var value = stateData[metricKey][stateCode];
             if (value !== undefined) {
                 if (currentMetric === 'glPremium') {
-                    // TEMPORARILY DISABLED: valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
-                    valueEl.textContent = value + '%';
+                    valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
                 } else if (currentMetric === 'glSavings') {
                     valueEl.textContent = value + '%';
                 } else if (currentMetric === 'glCompetitiveness') {

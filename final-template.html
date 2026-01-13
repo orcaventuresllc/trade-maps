@@ -803,8 +803,7 @@ console.log('🧪 User Agent:', navigator.userAgent);
             var value = stateData[metricKey][stateCode];
             if (value !== undefined) {
                 if (currentMetric === 'glPremium') {
-                    // TEMPORARILY DISABLED: valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
-                    valueEl.textContent = value + '%';
+                    valueEl.textContent = glPremiumRanges[stateCode] || value + '%';
                 } else if (currentMetric === 'glSavings') {
                     valueEl.textContent = value + '%';
                 } else if (currentMetric === 'glCompetitiveness') {

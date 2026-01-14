@@ -5,6 +5,48 @@ All notable changes to the Insurance Cost Maps plugin will be documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-01-13
+
+### Added
+- **Flexible WC Class Code System**: Support for 1 or 2 Workers Compensation classes per trade
+- Dynamic WC button labels showing actual class codes (e.g., "Class 5190", "Class 5437 (Interior)")
+- WC class code and label storage in database
+- Trade-specific WC class codes:
+  - Carpenter: 5437 (Interior) & 5645 (Framing)
+  - Electrician: 5190
+  - Plumber: 5183
+  - HVAC: 5537
+  - General Contractor: 5645
+  - Landscaping: 9102 (Lawncare)
+  - Painter: 5474
+- CSV export/download feature in admin interface
+- Download button for each trade to export current data as CSV
+
+### Changed
+- **CSV Format**: Expanded from 7 to 11 columns to support flexible WC classes
+  - Old: `State,GL_Premium_Low,GL_Premium_High,GL_Savings,GL_Competitiveness,WC_Rate_5437,WC_Rate_5645`
+  - New: `State,GL_Premium_Low,GL_Premium_High,GL_Savings,GL_Competitiveness,WC_Class_1,WC_Rate_1,WC_Label_1,WC_Class_2,WC_Rate_2,WC_Label_2`
+- Database schema updated with new WC class columns
+- WC buttons now generated dynamically based on uploaded data
+- SEO table headers now show actual WC class codes
+- JavaScript updated to use generic wcRate1/wcRate2 keys
+
+### Fixed
+- WC data now correctly populated for all trades (was showing zeros for non-carpenter trades)
+- Each trade now displays its correct WC class code(s)
+- Sample CSV files regenerated with accurate WC data for each trade
+
+### Migration
+- Automatic database migration on plugin load (v1.0 → v1.1)
+- Old column names renamed: `wc_rate_5437` → `wc_rate_1`, `wc_rate_5645` → `wc_rate_2`
+- Existing data migrated with default carpenter class codes (5437/5645)
+- Users should re-upload CSVs in new 11-column format for full functionality
+
+### Backward Compatibility
+- Plugin automatically migrates old database structure
+- Old CSV format data will be migrated but won't show custom class codes
+- New CSV format required to display trade-specific class codes
+
 ## [1.0.0] - 2026-01-13
 
 ### Added

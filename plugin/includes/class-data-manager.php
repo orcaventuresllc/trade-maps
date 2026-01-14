@@ -24,9 +24,9 @@ class Insurance_Maps_Data_Manager {
      * @return bool|WP_Error True if valid, WP_Error otherwise
      */
     private function validate_csv_row($row, $line_number) {
-        // Check we have 7 columns
-        if (count($row) !== 7) {
-            return new WP_Error('invalid_columns', sprintf('Line %d: Expected 7 columns, found %d', $line_number, count($row)));
+        // Check we have 11 columns
+        if (count($row) !== 11) {
+            return new WP_Error('invalid_columns', sprintf('Line %d: Expected 11 columns, found %d', $line_number, count($row)));
         }
 
         // Validate state code (2 uppercase letters)
@@ -35,9 +35,10 @@ class Insurance_Maps_Data_Manager {
             return new WP_Error('invalid_state', sprintf('Line %d: Invalid state code "%s"', $line_number, $row[0]));
         }
 
-        // Validate numeric values are actually numeric
-        for ($i = 1; $i <= 6; $i++) {
-            if (!is_numeric($row[$i])) {
+        // Validate numeric values are actually numeric (skip text columns 5, 7, 8, 10)
+        $numeric_columns = array(1, 2, 3, 4, 6, 9);
+        foreach ($numeric_columns as $i) {
+            if (!is_numeric($row[$i]) && $row[$i] !== '') {
                 return new WP_Error('invalid_number', sprintf('Line %d: Column %d must be numeric', $line_number, $i + 1));
             }
         }
@@ -66,10 +67,13 @@ class Insurance_Maps_Data_Manager {
         }
 
         // Validate WC Rates (0-1000) - reasonable upper limit
-        $wc_5437 = floatval($row[5]);
-        $wc_5645 = floatval($row[6]);
-        if ($wc_5437 < 0 || $wc_5437 > 1000 || $wc_5645 < 0 || $wc_5645 > 1000) {
-            return new WP_Error('invalid_range', sprintf('Line %d: WC Rates must be between 0 and 1000', $line_number));
+        $wc_rate_1 = floatval($row[6]);
+        $wc_rate_2 = floatval($row[9]);
+        if ($wc_rate_1 < 0 || $wc_rate_1 > 1000) {
+            return new WP_Error('invalid_range', sprintf('Line %d: WC Rate 1 must be between 0 and 1000', $line_number));
+        }
+        if ($wc_rate_2 < 0 || $wc_rate_2 > 1000) {
+            return new WP_Error('invalid_range', sprintf('Line %d: WC Rate 2 must be between 0 and 1000', $line_number));
         }
 
         return true;
@@ -96,7 +100,7 @@ class Insurance_Maps_Data_Manager {
 
         // Read and validate header row
         $header = fgetcsv($file);
-        $expected_headers = array('State', 'GL_Premium_Low', 'GL_Premium_High', 'GL_Savings', 'GL_Competitiveness', 'WC_Rate_5437', 'WC_Rate_5645');
+        $expected_headers = array('State', 'GL_Premium_Low', 'GL_Premium_High', 'GL_Savings', 'GL_Competitiveness', 'WC_Class_1', 'WC_Rate_1', 'WC_Label_1', 'WC_Class_2', 'WC_Rate_2', 'WC_Label_2');
 
         if ($header !== $expected_headers) {
             fclose($file);
@@ -132,8 +136,12 @@ class Insurance_Maps_Data_Manager {
                     'gl_premium_high' => floatval($row[2]),
                     'gl_savings' => floatval($row[3]),
                     'gl_competitiveness' => intval($row[4]),
-                    'wc_rate_5437' => floatval($row[5]),
-                    'wc_rate_5645' => floatval($row[6])
+                    'wc_class_1' => sanitize_text_field($row[5]),
+                    'wc_rate_1' => floatval($row[6]),
+                    'wc_label_1' => sanitize_text_field($row[7]),
+                    'wc_class_2' => sanitize_text_field($row[8]),
+                    'wc_rate_2' => floatval($row[9]),
+                    'wc_label_2' => sanitize_text_field($row[10])
                 );
 
                 // Insert or update (upsert)
@@ -188,10 +196,29 @@ class Insurance_Maps_Data_Manager {
                 'glPremium' => array(),
                 'glSavings' => array(),
                 'glCompetitiveness' => array(),
-                'wcRate5437' => array(),
-                'wcRate5645' => array()
+                'wcRate1' => array(),
+                'wcRate2' => array()
+            ),
+            'wcConfig' => array(
+                'class1' => '',
+                'label1' => '',
+                'class2' => '',
+                'label2' => '',
+                'hasTwoClasses' => false
             )
         );
+
+        // Get WC configuration from first row (same for all states in a trade)
+        if (!empty($data)) {
+            $first = $data[0];
+            $formatted['wcConfig'] = array(
+                'class1' => $first['wc_class_1'],
+                'label1' => $first['wc_label_1'],
+                'class2' => $first['wc_class_2'],
+                'label2' => $first['wc_label_2'],
+                'hasTwoClasses' => !empty($first['wc_class_2'])
+            );
+        }
 
         foreach ($data as $row) {
             $state = $row['state_code'];
@@ -206,8 +233,8 @@ class Insurance_Maps_Data_Manager {
 
             $formatted['stateData']['glSavings'][$state] = floatval($row['gl_savings']);
             $formatted['stateData']['glCompetitiveness'][$state] = intval($row['gl_competitiveness']);
-            $formatted['stateData']['wcRate5437'][$state] = floatval($row['wc_rate_5437']);
-            $formatted['stateData']['wcRate5645'][$state] = floatval($row['wc_rate_5645']);
+            $formatted['stateData']['wcRate1'][$state] = floatval($row['wc_rate_1']);
+            $formatted['stateData']['wcRate2'][$state] = floatval($row['wc_rate_2']);
         }
 
         return $formatted;
@@ -287,7 +314,7 @@ class Insurance_Maps_Data_Manager {
         $output = fopen('php://temp', 'r+');
 
         // Write header row (must match import format exactly)
-        fputcsv($output, array('State', 'GL_Premium_Low', 'GL_Premium_High', 'GL_Savings', 'GL_Competitiveness', 'WC_Rate_5437', 'WC_Rate_5645'));
+        fputcsv($output, array('State', 'GL_Premium_Low', 'GL_Premium_High', 'GL_Savings', 'GL_Competitiveness', 'WC_Class_1', 'WC_Rate_1', 'WC_Label_1', 'WC_Class_2', 'WC_Rate_2', 'WC_Label_2'));
 
         // Write data rows
         foreach ($data as $row) {
@@ -297,8 +324,12 @@ class Insurance_Maps_Data_Manager {
                 $row['gl_premium_high'],
                 $row['gl_savings'],
                 $row['gl_competitiveness'],
-                $row['wc_rate_5437'],
-                $row['wc_rate_5645']
+                $row['wc_class_1'],
+                $row['wc_rate_1'],
+                $row['wc_label_1'],
+                $row['wc_class_2'],
+                $row['wc_rate_2'],
+                $row['wc_label_2']
             ));
         }
 

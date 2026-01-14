@@ -9,10 +9,11 @@
     'use strict';
 
     // Data will be injected by PHP via insuranceMapData global variable
-    // Structure: { glPremiumRanges: {...}, stateData: {...} }
+    // Structure: { glPremiumRanges: {...}, stateData: {...}, wcConfig: {...} }
 
     var glPremiumRanges = window.insuranceMapData ? window.insuranceMapData.glPremiumRanges : {};
     var stateData = window.insuranceMapData ? window.insuranceMapData.stateData : {};
+    var wcConfig = window.insuranceMapData ? window.insuranceMapData.wcConfig : {};
 
     var stateNames = {
         AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
@@ -29,7 +30,7 @@
     };
 
     var currentMetric = 'glPremium';
-    var currentWCCode = '5437';
+    var currentWCCode = '1'; // Now uses '1' or '2' instead of class codes
     var selectedState = null;
 
     // Update colors

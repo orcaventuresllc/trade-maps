@@ -3,7 +3,7 @@
  * Plugin Name: Insurance Cost Maps
  * Plugin URI: https://github.com/orcaventuresllc/trade-maps
  * Description: Interactive US maps displaying insurance cost metrics by trade and state. Upload CSV files to manage data and use shortcodes to display maps.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Orca Ventures LLC
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('INSURANCE_MAPS_VERSION', '1.0.0');
+define('INSURANCE_MAPS_VERSION', '1.1.0');
 define('INSURANCE_MAPS_PATH', plugin_dir_path(__FILE__));
 define('INSURANCE_MAPS_URL', plugin_dir_url(__FILE__));
 
@@ -40,6 +40,7 @@ function insurance_maps_activate() {
 
     $charset_collate = $wpdb->get_charset_collate();
 
+    // Updated schema with flexible WC columns
     $sql = "CREATE TABLE $table_name (
         id mediumint(9) NOT NULL AUTO_INCREMENT,
         trade varchar(50) NOT NULL,
@@ -48,8 +49,12 @@ function insurance_maps_activate() {
         gl_premium_high decimal(4,2) NOT NULL,
         gl_savings decimal(5,2) NOT NULL,
         gl_competitiveness int NOT NULL,
-        wc_rate_5437 decimal(5,2) NOT NULL,
-        wc_rate_5645 decimal(5,2) NOT NULL,
+        wc_class_1 varchar(10) DEFAULT NULL,
+        wc_rate_1 decimal(5,2) DEFAULT NULL,
+        wc_label_1 varchar(50) DEFAULT NULL,
+        wc_class_2 varchar(10) DEFAULT NULL,
+        wc_rate_2 decimal(5,2) DEFAULT NULL,
+        wc_label_2 varchar(50) DEFAULT NULL,
         updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY  (id),
         UNIQUE KEY trade_state (trade, state_code)
@@ -59,7 +64,51 @@ function insurance_maps_activate() {
     dbDelta($sql);
 
     // Set version
-    add_option('insurance_maps_version', INSURANCE_MAPS_VERSION);
+    update_option('insurance_maps_version', INSURANCE_MAPS_VERSION);
+}
+
+/**
+ * Check and migrate database schema on plugin load
+ * Handles upgrades from v1.0 to v1.1 (adds WC class columns)
+ */
+add_action('plugins_loaded', 'insurance_maps_check_schema');
+function insurance_maps_check_schema() {
+    global $wpdb;
+    $table_name = $wpdb->prefix . 'insurance_map_data';
+
+    // Check if table exists first
+    if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") !== $table_name) {
+        return; // Table doesn't exist yet, will be created on activation
+    }
+
+    // Get current columns
+    $columns = $wpdb->get_col("DESCRIBE {$table_name}", 0);
+
+    // Check if migration needed (old columns exist but new ones don't)
+    $needs_migration = in_array('wc_rate_5437', $columns) && !in_array('wc_class_1', $columns);
+
+    if ($needs_migration) {
+        // Add new WC class columns
+        $wpdb->query("ALTER TABLE {$table_name}
+            ADD COLUMN wc_class_1 varchar(10) DEFAULT NULL AFTER gl_competitiveness,
+            ADD COLUMN wc_label_1 varchar(50) DEFAULT NULL AFTER wc_class_1,
+            ADD COLUMN wc_class_2 varchar(10) DEFAULT NULL AFTER wc_label_1,
+            ADD COLUMN wc_label_2 varchar(50) DEFAULT NULL AFTER wc_class_2");
+
+        // Rename old columns to new generic names
+        $wpdb->query("ALTER TABLE {$table_name}
+            CHANGE COLUMN wc_rate_5437 wc_rate_1 decimal(5,2) DEFAULT NULL,
+            CHANGE COLUMN wc_rate_5645 wc_rate_2 decimal(5,2) DEFAULT NULL");
+
+        // Set default class codes for existing data (carpenter format)
+        $wpdb->query("UPDATE {$table_name}
+            SET wc_class_1 = '5437', wc_label_1 = 'Interior',
+                wc_class_2 = '5645', wc_label_2 = 'Framing'
+            WHERE wc_class_1 IS NULL");
+
+        // Update version
+        update_option('insurance_maps_version', INSURANCE_MAPS_VERSION);
+    }
 }
 
 /**

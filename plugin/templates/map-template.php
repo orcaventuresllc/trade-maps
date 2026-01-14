@@ -30,9 +30,25 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
         <button class="metric-btn" data-metric="wcRate">WC Rate per $100</button>
     </div>
 
+    <!-- WC sub-buttons - dynamically generated based on WC config -->
     <div class="wc-sub-buttons" id="wc-sub-buttons" style="display:none;">
-        <button class="wc-sub-btn active" data-wc-code="5437">Class 5437 (Interior)</button>
-        <button class="wc-sub-btn" data-wc-code="5645">Class 5645 (Framing)</button>
+        <?php if (!empty($map_data['wcConfig']['class1'])): ?>
+            <button class="wc-sub-btn active" data-wc-code="1">
+                Class <?php echo esc_html($map_data['wcConfig']['class1']); ?>
+                <?php if (!empty($map_data['wcConfig']['label1'])): ?>
+                    (<?php echo esc_html($map_data['wcConfig']['label1']); ?>)
+                <?php endif; ?>
+            </button>
+        <?php endif; ?>
+
+        <?php if ($map_data['wcConfig']['hasTwoClasses']): ?>
+            <button class="wc-sub-btn" data-wc-code="2">
+                Class <?php echo esc_html($map_data['wcConfig']['class2']); ?>
+                <?php if (!empty($map_data['wcConfig']['label2'])): ?>
+                    (<?php echo esc_html($map_data['wcConfig']['label2']); ?>)
+                <?php endif; ?>
+            </button>
+        <?php endif; ?>
     </div>
 
     <div class="legend-container">
@@ -90,8 +106,12 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
                 <th>GL Premium Range</th>
                 <th>GL Savings %</th>
                 <th>GL Competitiveness</th>
-                <th>WC Rate (Class 5437)</th>
-                <th>WC Rate (Class 5645)</th>
+                <?php if (!empty($map_data['wcConfig']['class1'])): ?>
+                    <th>WC Rate (Class <?php echo esc_html($map_data['wcConfig']['class1']); ?>)</th>
+                <?php endif; ?>
+                <?php if ($map_data['wcConfig']['hasTwoClasses']): ?>
+                    <th>WC Rate (Class <?php echo esc_html($map_data['wcConfig']['class2']); ?>)</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -101,8 +121,12 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
                 <td><?php echo esc_html($row['gl_premium_low'] . '% - ' . $row['gl_premium_high'] . '%'); ?></td>
                 <td><?php echo esc_html($row['gl_savings']); ?>%</td>
                 <td><?php echo esc_html($row['gl_competitiveness']); ?></td>
-                <td>$<?php echo esc_html($row['wc_rate_5437']); ?></td>
-                <td>$<?php echo esc_html($row['wc_rate_5645']); ?></td>
+                <?php if (!empty($map_data['wcConfig']['class1'])): ?>
+                    <td>$<?php echo esc_html($row['wc_rate_1']); ?></td>
+                <?php endif; ?>
+                <?php if ($map_data['wcConfig']['hasTwoClasses']): ?>
+                    <td>$<?php echo esc_html($row['wc_rate_2']); ?></td>
+                <?php endif; ?>
             </tr>
             <?php endforeach; ?>
         </tbody>

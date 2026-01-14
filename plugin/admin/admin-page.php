@@ -54,7 +54,7 @@ function insurance_maps_admin_page() {
                         <td>
                             <input type="file" name="csv_file" id="csv_file" accept=".csv" required>
                             <p class="description">
-                                <strong>Required columns:</strong> State, GL_Premium_Low, GL_Premium_High, GL_Savings, GL_Competitiveness, WC_Rate_5437, WC_Rate_5645<br>
+                                <strong>Required columns (11 total):</strong> State, GL_Premium_Low, GL_Premium_High, GL_Savings, GL_Competitiveness, WC_Class_1, WC_Rate_1, WC_Label_1, WC_Class_2, WC_Rate_2, WC_Label_2<br>
                                 <strong>Note:</strong> Uploading a CSV for an existing trade will replace all data for that trade.
                             </p>
                         </td>
@@ -134,13 +134,16 @@ function insurance_maps_admin_page() {
             </ol>
 
             <h3 style="margin-top: 30px;">CSV Format Template</h3>
-            <p>Your CSV file must have exactly these column headers in this order:</p>
-            <pre style="background: #f5f5f5; padding: 15px; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px;">State,GL_Premium_Low,GL_Premium_High,GL_Savings,GL_Competitiveness,WC_Rate_5437,WC_Rate_5645
-AL,1.2,2.3,32.3,90,6.14,14.07
-AK,0.8,1.6,22.6,0,6.16,9.78
-AZ,0.9,2.1,50.6,30,4.05,8.51
-...
-(50 states total)</pre>
+            <p>Your CSV file must have exactly these 11 column headers in this order:</p>
+            <pre style="background: #f5f5f5; padding: 15px; overflow-x: auto; border: 1px solid #ddd; border-radius: 4px; font-size: 11px;">State,GL_Premium_Low,GL_Premium_High,GL_Savings,GL_Competitiveness,WC_Class_1,WC_Rate_1,WC_Label_1,WC_Class_2,WC_Rate_2,WC_Label_2
+
+Carpenter (2 WC classes):
+AL,1.2,2.3,32.3,90,5437,6.14,Interior,5645,14.07,Framing
+
+Electrician (1 WC class):
+AL,0.4,1.1,38.6,90,5190,3.56,,,0,
+
+(50 states total for each trade)</pre>
 
             <h4>Column Descriptions:</h4>
             <ul style="line-height: 1.8;">
@@ -149,8 +152,23 @@ AZ,0.9,2.1,50.6,30,4.05,8.51
                 <li><strong>GL_Premium_High:</strong> General Liability premium high end percentage (e.g., 2.3)</li>
                 <li><strong>GL_Savings:</strong> General Liability savings percentage (e.g., 32.3)</li>
                 <li><strong>GL_Competitiveness:</strong> Carrier competitiveness score 0-100 (e.g., 90)</li>
-                <li><strong>WC_Rate_5437:</strong> Workers Comp rate for class 5437 (e.g., 6.14)</li>
-                <li><strong>WC_Rate_5645:</strong> Workers Comp rate for class 5645 (e.g., 14.07)</li>
+                <li><strong>WC_Class_1:</strong> First WC class code (e.g., 5437, 5190, 5183) - required</li>
+                <li><strong>WC_Rate_1:</strong> First WC rate value (e.g., 6.14) - required</li>
+                <li><strong>WC_Label_1:</strong> Optional label for first class (e.g., Interior) - can be empty</li>
+                <li><strong>WC_Class_2:</strong> Second WC class code (e.g., 5645) - empty if only one class</li>
+                <li><strong>WC_Rate_2:</strong> Second WC rate value (e.g., 14.07) - 0 if only one class</li>
+                <li><strong>WC_Label_2:</strong> Optional label for second class (e.g., Framing) - empty if only one class</li>
+            </ul>
+
+            <h4>WC Class Codes by Trade:</h4>
+            <ul style="line-height: 1.8;">
+                <li><strong>Carpenter:</strong> 5437 (Interior) and 5645 (Framing)</li>
+                <li><strong>Electrician:</strong> 5190</li>
+                <li><strong>Plumber:</strong> 5183</li>
+                <li><strong>HVAC:</strong> 5537</li>
+                <li><strong>General Contractor:</strong> 5645</li>
+                <li><strong>Landscaping:</strong> 9102 (Lawncare)</li>
+                <li><strong>Painter:</strong> 5474</li>
             </ul>
 
             <h3 style="margin-top: 30px;">Shortcode Options</h3>
@@ -165,9 +183,10 @@ AZ,0.9,2.1,50.6,30,4.05,8.51
             <h2>Need Help?</h2>
             <p><strong>Common Issues:</strong></p>
             <ul style="line-height: 1.8;">
-                <li>If upload fails, check that your CSV has exactly 7 columns with the correct headers</li>
+                <li>If upload fails, check that your CSV has exactly 11 columns with the correct headers</li>
                 <li>Trade names must be lowercase with no spaces (use hyphens if needed: general-contractor)</li>
                 <li>Make sure you have data for all 50 states for best results</li>
+                <li>For single WC class trades, leave WC_Class_2, WC_Label_2 empty and set WC_Rate_2 to 0</li>
                 <li>If the map doesn't display, check that you've activated the plugin</li>
             </ul>
             <p><strong>Plugin Version:</strong> <?php echo esc_html(INSURANCE_MAPS_VERSION); ?></p>

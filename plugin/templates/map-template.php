@@ -96,10 +96,14 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
 <?php include INSURANCE_MAPS_PATH . 'templates/svg-map.html'; ?>
 
 <?php if ($show_table && !empty($raw_data)): ?>
-<!-- SEO Data Table -->
-<div class="insurance-data-table-section">
-    <h3><?php echo esc_html(ucfirst($trade)); ?> Insurance Cost Data by State</h3>
-    <table class="insurance-data-table">
+<!-- SEO Data Table - Collapsible but crawlable -->
+<details class="insurance-data-table-section">
+    <summary class="table-toggle">
+        <span class="toggle-text">Show State-by-State Data</span>
+        <span class="toggle-icon">▼</span>
+    </summary>
+    <div class="insurance-data-table-wrapper">
+        <table class="insurance-data-table">
         <thead>
             <tr>
                 <th>State</th>
@@ -131,7 +135,8 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
             <?php endforeach; ?>
         </tbody>
     </table>
-</div>
+    </div>
+</details>
 
 <!-- Schema.org Structured Data -->
 <script type="application/ld+json">

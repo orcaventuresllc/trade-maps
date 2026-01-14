@@ -436,6 +436,17 @@
             // Initial color update
             updateColors();
 
+            // Add toggle text update for collapsible table
+            var tableDetails = document.querySelector('details.insurance-data-table-section');
+            if (tableDetails) {
+                tableDetails.addEventListener('toggle', function() {
+                    var toggleText = this.querySelector('.toggle-text');
+                    if (toggleText) {
+                        toggleText.textContent = this.open ? 'Hide Data' : 'Show State-by-State Data';
+                    }
+                });
+            }
+
         } catch (error) {
             // Silent fail
         }

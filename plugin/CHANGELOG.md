@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Painter: 5474
 - CSV export/download feature in admin interface
 - Download button for each trade to export current data as CSV
+- **Collapsible data table**: Table collapsed by default, expands on click
+- SEO-friendly accordion using HTML5 `<details>` element
 
 ### Changed
 - **CSV Format**: Expanded from 7 to 11 columns to support flexible WC classes
@@ -35,6 +37,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WC data now correctly populated for all trades (was showing zeros for non-carpenter trades)
 - Each trade now displays its correct WC class code(s)
 - Sample CSV files regenerated with accurate WC data for each trade
+- **Brand colors applied**: Table now uses brand teal (#416E72) instead of blue
+- Table hover color updated to brand light teal (#D9F0EE)
+- Alternating row colors updated to brand beige (#F3F3F0)
+
+### UI/UX Improvements
+- Data table now collapsible (collapsed by default) for cleaner page layout
+- Toggle text changes: "Show State-by-State Data" → "Hide Data"
+- Smooth expand/collapse animation
+- Table remains crawlable by search engines when collapsed
+- Keyboard accessible (Tab to toggle, Enter to expand/collapse)
 
 ### Migration
 - Automatic database migration on plugin load (v1.0 → v1.1)

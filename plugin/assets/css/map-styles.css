@@ -283,18 +283,53 @@
 }
 
 /* SEO Data Table Styles */
-.insurance-data-table-section {
+details.insurance-data-table-section {
     max-width: 1160px;
     margin: 40px auto 0;
     padding: 0 20px;
 }
 
-.insurance-data-table-section h3 {
-    font-size: 24px;
+summary.table-toggle {
+    cursor: pointer;
+    padding: 15px 20px;
+    background: #F3F3F0;
+    border: 2px solid #E3E3DB;
+    border-radius: 8px;
+    font-size: 18px;
     font-weight: 600;
-    color: #1a1a1a;
-    margin-bottom: 20px;
-    text-align: center;
+    color: #181815;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+summary.table-toggle:hover {
+    background: #E3E3DB;
+    border-color: #B5B4AE;
+}
+
+summary.table-toggle::-webkit-details-marker {
+    display: none;
+}
+
+.toggle-text {
+    font-weight: 600;
+}
+
+.toggle-icon {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+details[open] .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.insurance-data-table-wrapper {
+    margin-top: 20px;
 }
 
 .insurance-data-table {
@@ -315,8 +350,8 @@
 }
 
 .insurance-data-table th {
-    background-color: #2563eb;
-    color: white;
+    background-color: #416E72;
+    color: #FFFFFF;
     font-weight: 600;
     text-transform: uppercase;
     font-size: 12px;
@@ -328,11 +363,11 @@
 }
 
 .insurance-data-table tr:nth-child(even) {
-    background-color: #f9fafb;
+    background-color: #F3F3F0;
 }
 
 .insurance-data-table tr:hover {
-    background-color: #f0f4ff;
+    background-color: #D9F0EE;
 }
 
 /* Mobile Responsive */

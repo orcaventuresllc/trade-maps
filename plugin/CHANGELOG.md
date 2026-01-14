@@ -48,6 +48,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Table remains crawlable by search engines when collapsed
 - Keyboard accessible (Tab to toggle, Enter to expand/collapse)
 
+### Brand Styling Applied
+- **Fonts**: Added Google Fonts (Saira Extra Condensed, Poppins, Inter)
+- **Active buttons**: Gold (#F0CC4C) instead of blue
+- **Heat map**: Teal gradient (#D9F0EE to #416E72) matching brand
+- **Selected state**: Gold highlight (#F0CC4C border, #FFE898 fill)
+- **CTA button**: Brand gold (#F0CC4C, hover #E0B004)
+- **WC sub-buttons**: Dark (#181815) when active
+- **Text colors**: Brand grays (#181815, #353433, #8F8D85)
+- **Backgrounds**: Brand beige (#F3F3F0, #E3E3DB)
+- **Borders**: Brand gray (#B5B4AE)
+- All colors now match ContractorNerd brand guidelines
+
+### Developer Features
+- Added debug logging to JavaScript for troubleshooting
+- Console messages show data loading status
+- Error message displayed if no CSV data uploaded
+- Helpful debugging for administrators
+
 ### Migration
 - Automatic database migration on plugin load (v1.0 → v1.1)
 - Old column names renamed: `wc_rate_5437` → `wc_rate_1`, `wc_rate_5645` → `wc_rate_2`

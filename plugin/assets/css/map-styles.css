@@ -1,13 +1,17 @@
 /**
  * Insurance Cost Maps - Styles
  * Interactive US maps displaying insurance cost metrics
+ * ContractorNerd Brand Styling
  */
+
+/* Import brand fonts */
+@import url('https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@700&family=Poppins:wght@400;500;600;700&family=Inter:wght@400;600;700&display=swap');
 
 #insurance-map-container {
     max-width: 1160px;
     margin: 0 auto;
     padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .map-header {
@@ -17,8 +21,9 @@
 
 .map-header h2 {
     font-size: 28px;
-    font-weight: 600;
-    color: #1a1a1a;
+    font-weight: 700;
+    font-family: 'Saira Extra Condensed', sans-serif;
+    color: #181815;
 }
 
 .metric-toggles {
@@ -31,24 +36,26 @@
 
 .metric-btn {
     padding: 10px 20px;
-    border: 2px solid #ddd;
+    border: 2px solid #B5B4AE;
     background: white;
-    color: #333;
+    color: #353433;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
     transition: all 0.3s;
 }
 
 .metric-btn:hover {
-    background: #f5f5f5;
-    color: #333;
+    background: #F3F3F0;
+    color: #353433;
 }
 
 .metric-btn.active {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
+    background: #F0CC4C;
+    color: #181815;
+    border-color: #F0CC4C;
 }
 
 .map-content-container {
@@ -58,7 +65,7 @@
 }
 
 .map-wrapper {
-    background: #f9fafb;
+    background: #F3F3F0;
     border-radius: 12px;
     padding: 20px;
     min-height: 400px;
@@ -78,29 +85,29 @@
     stroke-width: 0.5;
     cursor: pointer;
     transition: all 0.2s;
-    fill: #e5e7eb;
+    fill: #E3E3DB;
 }
 
 .state-path:hover {
-    stroke: #333;
+    stroke: #353433;
     stroke-width: 1.5;
 }
 
 .state-path.selected {
-    stroke: #dc2626 !important;
+    stroke: #F0CC4C !important;
     stroke-width: 2 !important;
-    fill: #fca5a5 !important;
+    fill: #FFE898 !important;
 }
 
-/* BLUE Heat colors from original */
-.heat-0 { fill: #e5f3ff; }
-.heat-1 { fill: #b3d9ff; }
-.heat-2 { fill: #80bfff; }
-.heat-3 { fill: #4da6ff; }
-.heat-4 { fill: #1a8cff; }
-.heat-5 { fill: #0066cc; }
-.heat-6 { fill: #004c99; }
-.heat-7 { fill: #003366; }
+/* TEAL Heat colors - ContractorNerd brand */
+.heat-0 { fill: #D9F0EE; }
+.heat-1 { fill: #BFDBDB; }
+.heat-2 { fill: #99CFCF; }
+.heat-3 { fill: #5B979A; }
+.heat-4 { fill: #5B979A; }
+.heat-5 { fill: #416E72; }
+.heat-6 { fill: #416E72; }
+.heat-7 { fill: #416E72; }
 
 .legend-container {
     display: flex;
@@ -113,20 +120,22 @@
 .legend-label {
     font-size: 14px;
     font-weight: 500;
-    color: #666;
+    font-family: 'Inter', sans-serif;
+    color: #8F8D85;
 }
 
 .legend-gradient {
     width: 200px;
     height: 20px;
-    background: linear-gradient(to right, #e5f3ff, #0066cc);
+    background: linear-gradient(to right, #D9F0EE, #416E72);
     border-radius: 4px;
-    border: 1px solid #ddd;
+    border: 1px solid #B5B4AE;
 }
 
 .legend-min, .legend-max {
     font-size: 12px;
-    color: #888;
+    font-family: 'Inter', sans-serif;
+    color: #B5B4AE;
 }
 
 /* Mobile Dropdown Styles */
@@ -140,23 +149,26 @@
     display: block;
     margin-bottom: 10px;
     font-weight: 500;
-    color: #555;
+    font-family: 'Inter', sans-serif;
+    color: #585752;
 }
 
 #state-dropdown {
     width: 100%;
     max-width: 300px;
     padding: 10px;
-    border: 2px solid #ddd;
+    border: 2px solid #B5B4AE;
     border-radius: 8px;
     font-size: 16px;
+    font-family: 'Inter', sans-serif;
     background: white;
     cursor: pointer;
 }
 
 .map-subtitle {
     font-size: 16px;
-    color: #666;
+    font-family: 'Inter', sans-serif;
+    color: #8F8D85;
     margin: 0;
 }
 
@@ -170,26 +182,27 @@
 
 .wc-sub-btn {
     padding: 8px 16px;
-    border: 2px solid #ddd;
+    border: 2px solid #B5B4AE;
     background: white;
     border-radius: 6px;
     cursor: pointer;
     font-size: 13px;
     font-weight: 500;
+    font-family: 'Inter', sans-serif;
     transition: all 0.3s ease;
-    color: #555;
+    color: #585752;
 }
 
 .wc-sub-btn:hover {
-    background: #f5f5f5;
-    color: #555;
-    border-color: #999;
+    background: #F3F3F0;
+    color: #585752;
+    border-color: #8F8D85;
 }
 
 .wc-sub-btn.active {
-    background: #10b981;
+    background: #181815;
     color: white;
-    border-color: #10b981;
+    border-color: #181815;
 }
 
 .info-card {
@@ -206,20 +219,23 @@
 .state-name {
     font-size: 24px;
     font-weight: 600;
-    color: #2563eb;
+    font-family: 'Poppins', sans-serif;
+    color: #5B979A;
     margin-bottom: 10px;
 }
 
 .metric-value {
     font-size: 32px;
     font-weight: 700;
-    color: #2563eb;
+    font-family: 'Poppins', sans-serif;
+    color: #5B979A;
     margin: 10px 0;
 }
 
 .metric-description {
     font-size: 14px;
-    color: #666;
+    font-family: 'Inter', sans-serif;
+    color: #8F8D85;
     margin: 10px 0 20px 0;
     line-height: 1.5;
 }
@@ -227,26 +243,27 @@
 .cta-link {
     display: inline-block;
     padding: 12px 24px;
-    background: #2563eb;
-    color: white;
+    background: #F0CC4C;
+    color: #181815;
     text-decoration: none;
     border-radius: 8px;
-    font-weight: 500;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
     transition: background 0.3s ease;
     text-align: center;
     line-height: 1.4;
 }
 
 .cta-link:hover {
-    background: #1d4ed8;
-    color: white;
+    background: #E0B004;
+    color: #181815;
 }
 
 /* Hover tooltip */
 .info-box-hover {
     position: absolute;
     background: white;
-    border: 1px solid #ddd;
+    border: 1px solid #B5B4AE;
     border-radius: 8px;
     padding: 12px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -258,20 +275,23 @@
 .info-box-hover .state-name {
     font-size: 16px;
     font-weight: 600;
-    color: #1a1a1a;
+    font-family: 'Poppins', sans-serif;
+    color: #181815;
     margin-bottom: 4px;
 }
 
 .info-box-hover .metric-label {
     font-size: 12px;
-    color: #666;
+    font-family: 'Inter', sans-serif;
+    color: #8F8D85;
     margin-bottom: 2px;
 }
 
 .info-box-hover .metric-value {
     font-size: 18px;
     font-weight: 700;
-    color: #2563eb;
+    font-family: 'Poppins', sans-serif;
+    color: #5B979A;
 }
 
 /* Hide the source SVG */

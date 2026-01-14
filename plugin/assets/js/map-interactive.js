@@ -386,10 +386,22 @@
     // Initialize everything
     function init() {
         try {
+            // Debug logging
+            console.log('Insurance Map: Initializing...');
+            console.log('Data available:', !!window.insuranceMapData);
+
             // Check if data is available
             if (!window.insuranceMapData) {
+                console.error('Insurance Map Error: No data found. Please upload CSV data via WordPress admin.');
+                var errorContainer = document.getElementById('insurance-map-container');
+                if (errorContainer) {
+                    errorContainer.innerHTML = '<div style="padding:20px;background:#fee;border:1px solid#c33;border-radius:8px;margin:20px 0;"><p><strong>Map data not loaded.</strong></p><p>Please upload CSV data for this trade in the WordPress admin (Insurance Maps menu).</p></div>';
+                }
                 return;
             }
+
+            console.log('State data keys:', window.insuranceMapData.stateData ? Object.keys(window.insuranceMapData.stateData) : 'undefined');
+            console.log('WC Config:', window.insuranceMapData.wcConfig);
 
             // Get the hidden SVG
             var hiddenSvg = document.querySelector('#hidden-svg-source svg');

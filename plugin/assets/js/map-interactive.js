@@ -395,7 +395,7 @@
                 console.error('Insurance Map Error: No data found. Please upload CSV data via WordPress admin.');
                 var errorContainer = document.getElementById('insurance-map-container');
                 if (errorContainer) {
-                    errorContainer.innerHTML = '<div style="padding:20px;background:#fee;border:1px solid#c33;border-radius:8px;margin:20px 0;"><p><strong>Map data not loaded.</strong></p><p>Please upload CSV data for this trade in the WordPress admin (Insurance Maps menu).</p></div>';
+                    errorContainer.innerHTML = '<div style="padding:20px;background:#fee;border:1px solid #c33;border-radius:8px;margin:20px 0;"><p><strong>Map data not loaded.</strong></p><p>Please upload CSV data for this trade in the WordPress admin (Insurance Maps menu).</p></div>';
                 }
                 return;
             }
@@ -404,14 +404,26 @@
             console.log('WC Config:', window.insuranceMapData.wcConfig);
 
             // Get the hidden SVG
+            var hiddenSvgContainer = document.getElementById('hidden-svg-source');
+            console.log('Hidden SVG container found:', !!hiddenSvgContainer);
+
             var hiddenSvg = document.querySelector('#hidden-svg-source svg');
+            console.log('Hidden SVG element found:', !!hiddenSvg);
+
             var container = document.getElementById('map-svg-container');
+            console.log('Map SVG container found:', !!container);
 
             if (!hiddenSvg) {
+                console.error('Insurance Map Error: SVG source not found in DOM');
+                var mapWrapper = document.querySelector('.map-wrapper');
+                if (mapWrapper) {
+                    mapWrapper.innerHTML = '<div style="padding:20px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;margin:20px 0;"><p><strong>Map SVG not loaded.</strong></p><p>The map source file could not be found. Please reinstall the plugin.</p><p style="font-size:12px;color:#666;">Debug: hidden-svg-source=' + !!hiddenSvgContainer + '</p></div>';
+                }
                 return;
             }
 
             if (!container) {
+                console.error('Insurance Map Error: Map container not found');
                 return;
             }
 
@@ -447,6 +459,7 @@
 
             // Initial color update
             updateColors();
+            console.log('Insurance Map: Colors updated');
 
             // Add toggle text update for collapsible table
             var tableDetails = document.querySelector('details.insurance-data-table-section');
@@ -459,8 +472,10 @@
                 });
             }
 
+            console.log('Insurance Map: Initialization complete!');
+
         } catch (error) {
-            // Silent fail
+            console.error('Insurance Map Error:', error);
         }
     }
 

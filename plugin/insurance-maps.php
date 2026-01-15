@@ -3,7 +3,7 @@
  * Plugin Name: Insurance Cost Maps
  * Plugin URI: https://github.com/orcaventuresllc/trade-maps
  * Description: Interactive US maps displaying insurance cost metrics by trade and state. Upload CSV files to manage data and use shortcodes to display maps.
- * Version: 1.1.0
+ * Version: 1.1.2
  * Author: Orca Ventures LLC
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin constants
-define('INSURANCE_MAPS_VERSION', '1.1.0');
+define('INSURANCE_MAPS_VERSION', '1.1.2');
 define('INSURANCE_MAPS_PATH', plugin_dir_path(__FILE__));
 define('INSURANCE_MAPS_URL', plugin_dir_url(__FILE__));
 

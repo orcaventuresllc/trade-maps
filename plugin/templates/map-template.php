@@ -74,10 +74,10 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
             </div>
 
             <!-- Tooltip for hover functionality -->
-            <div id="map-tooltip" style="position: absolute; display: none; background: white; border: 1px solid #ddd; border-radius: 8px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; pointer-events: none; min-width: 200px;">
-                <div class="state-name" style="font-weight: 600; color: #1a1a1a; margin-bottom: 4px;"></div>
-                <div class="metric-label" style="font-size: 12px; color: #666; margin-bottom: 2px;"></div>
-                <div class="metric-value" style="font-size: 24px; font-weight: 700; color: #2563eb;"></div>
+            <div id="map-tooltip" style="position: absolute; display: none; background: white; border: 1px solid #B5B4AE; border-radius: 8px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; pointer-events: none; min-width: 200px;">
+                <div class="state-name" style="font-weight: 600; font-family: 'Poppins', sans-serif; color: #181815; margin-bottom: 4px;"></div>
+                <div class="metric-label" style="font-size: 12px; font-family: 'Inter', sans-serif; color: #8F8D85; margin-bottom: 2px;"></div>
+                <div class="metric-value" style="font-size: 24px; font-weight: 700; font-family: 'Poppins', sans-serif; color: #5B979A;"></div>
             </div>
         </div>
 
@@ -92,8 +92,15 @@ window.insuranceMapData = <?php echo json_encode($map_data); ?>;
     </div>
 </div>
 
-<!-- Hidden SVG source -->
-<?php include INSURANCE_MAPS_PATH . 'templates/svg-map.html'; ?>
+<!-- Hidden SVG source - loaded via file_get_contents for reliability -->
+<?php
+$svg_file = INSURANCE_MAPS_PATH . 'templates/svg-map.html';
+if (file_exists($svg_file)) {
+    echo file_get_contents($svg_file);
+} else {
+    echo '<div id="hidden-svg-source"><p style="color:red;">SVG file not found at: ' . esc_html($svg_file) . '</p></div>';
+}
+?>
 
 <?php if ($show_table && !empty($raw_data)): ?>
 <!-- SEO Data Table - Collapsible but crawlable -->
